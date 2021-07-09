@@ -1,7 +1,7 @@
 Package: Rage
 Type: Package
 Title: Life History Metrics from Matrix Population Models
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person(given = "Patrick", 
            family = "Barks",
@@ -81,14 +81,13 @@ Encoding: UTF-8
 LazyData: true
 Depends: R(>= 3.5.0)
 RoxygenNote: 7.1.1
-Suggests: spelling, ggplot2, ggtern, knitr, rmarkdown, fields, scales,
-        vcd, testthat, covr
+Suggests: spelling, ggplot2, knitr, rmarkdown, testthat, covr
 VignetteBuilder: knitr
 Language: en-GB
 Config/testthat/parallel: true
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2021-05-03 20:21:42 UTC; jones
+Packaged: 2021-07-08 18:23:52 UTC; jones
 Author: Patrick Barks [aut] (<https://orcid.org/0000-0002-5947-8151>),
   Danny Buss [ctb],
   Pol Capdevila [aut] (<https://orcid.org/0000-0002-2842-4302>),
@@ -105,4 +104,4 @@ Author: Patrick Barks [aut] (<https://orcid.org/0000-0002-5947-8151>),
   Chelsea C. Thomas [aut] (<https://orcid.org/0000-0002-8155-9353>)
 Maintainer: Owen Jones <jones@biology.sdu.dk>
 Repository: CRAN
-Date/Publication: 2021-05-04 08:10:03 UTC
+Date/Publication: 2021-07-09 08:50:02 UTC
