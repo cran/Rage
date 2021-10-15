@@ -4,10 +4,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setupDarwin, include=FALSE, eval = Sys.info()[["sysname"]] == "Darwin"----
-#The following line seems to be required by pkgdown::build_site() on my machine, but causes build to break with R-CMD-CHECK on GH
-knitr::opts_chunk$set(dev = "png", dev.args = list(type = "cairo-png"))
-
 ## -----------------------------------------------------------------------------
 library(Rage)
 
@@ -89,10 +85,10 @@ vr_growth(matU, exclude_row = 4)
 mean(vec_growth, na.rm = TRUE)
 
 ## -----------------------------------------------------------------------------
-# calculate the stable distribution using popbio::stable.stage
-library(popbio)
+# calculate the stable distribution using popdemo::eigs
+library(popdemo)
 matA <- matU + matF
-w <- popbio::stable.stage(matA)
+w <- popdemo::eigs(matA, what = "ss")
 
 # calculate mean vital rate of growth weighted by the stable distribution
 vr_growth(matU, exclude_row = 4, weights_col = w)

@@ -4,10 +4,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setupDarwin, include=FALSE, eval = Sys.info()[["sysname"]] == "Darwin"----
-#The following line seems to be required by pkgdown::build_site() on my machine, but causes build to break with R-CMD-CHECK on GH
-knitr::opts_chunk$set(dev = "png", dev.args = list(type = "cairo-png"))
-
 ## ----echo=FALSE,fig.align='center',fig.height=2,fig.width=6-------------------
 # hidden code to produce figures
 library(DiagrammeR)
@@ -97,7 +93,6 @@ ggplot(ggdat[ggdat$col != "t", ],
         strip.placement = "outside")
 
 ## ----message=FALSE------------------------------------------------------------
-library(popbio)
 library(popdemo)
 
 # define the transition matrix, A
@@ -106,11 +101,9 @@ A <- rbind(c(0.0, 0.0, 3.2),
            c(0.0, 0.4, 0.9))
 
 # lambda: equilibrium per-capita population growth rate
-popbio::lambda(A = A)
 popdemo::eigs(A = A, what = "lambda")
 
 # w: stable stage distribution (relative frequencies)
-popbio::stable.stage(A = A)
 popdemo::eigs(A = A, what = "ss")
 
 ## -----------------------------------------------------------------------------
@@ -155,10 +148,10 @@ lx_to_hx(lx = lx)  # survivorship to mortality hazard
 
 ## ---- warning=FALSE, message=FALSE, fig.align='center', fig.height=5, fig.width=6----
 # project a germinated cohort through the U matrix
-cohort <- popbio::pop.projection(A = mpm1$matU, n = c(0, 1, 0, 0, 0), iterations = 10)
-popbio::stage.vector.plot(stage.vectors = cohort$stage.vectors[-1,],
-                          xlab = "time", ylab = "proportion in stage class",
-                          col = "black")
+cohort <- popdemo::project(A = mpm1$matU, vector = c(0,1,0,0,0), time = 10)
+popStructure <- vec(cohort)/rowSums(vec(cohort))
+
+matplot(popStructure, type = "l", xlab = "time", ylab = "proportion in stage class")
 
 ## -----------------------------------------------------------------------------
 # calculate time to QSD from the U matrix of an MPM
@@ -214,8 +207,8 @@ col1$matA
 
 ## -----------------------------------------------------------------------------
 # compare population growth rate of original and collapsed MPM (preserved)
-popbio::lambda(A = mpm1$matA)
-popbio::lambda(A = col1_cust$matA)
+popdemo::eigs(A = mpm1$matA,what = "lambda")
+popdemo::eigs(A = col1_cust$matA, what = "lambda")
 
 # compare net reproductive rate of original and collapsed MPM (not preserved)
 net_repro_rate(matU = mpm1$matU, matR = mpm1$matF)

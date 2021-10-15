@@ -2,14 +2,13 @@
 #' and fecundity
 #'
 #' This function calculates Demetrius' entropy from vectors of age-specific
-#' survivorship (lx) and fecundity (mx).
+#' survivorship (\code{lx}) and fecundity (\code{mx}).
 #' 
-#' #' @section Warning:
-#' Note that this function may produce unexpected results if used on partial
-#' survivorship and fecundity trajectories. In addition, it is sensitive to the
-#' length of the these vectors. We direct users to the functions
-#' `\code{\link{shape_surv}}` and `\code{\link{shape_rep}}` which are relatively
-#' robust to these issues.
+#' @section Warning: Note that this function may produce unexpected results if
+#'   used on partial survivorship and fecundity trajectories. In addition, it is
+#'   sensitive to the length of the these vectors. We direct users to the
+#'   functions `\code{\link{shape_surv}}` and `\code{\link{shape_rep}}` which
+#'   are relatively robust to these issues.
 #' 
 #' @param lx Age-specific survivorship trajectory (a vector of
 #'   monotonically-declining values in the interval [0,1]).
@@ -40,13 +39,13 @@ entropy_d <- function(lx, mx) {
   
   # validate arguments
   if (any(lx < 0 | lx > 1)) {
-    stop("All values of lx must be within the interval [0, 1]")
+    stop("All values of lx must be within the interval [0, 1].\n")
   }
   if (any(diff(lx) > 1e-7)) {
-    stop("Values of lx must be monotonically declining")
+    stop("Values of lx must be monotonically declining.\n")
   }
   if (any(mx < 0)) {
-    stop("All values of mx must be >= 0")
+    stop("All values of mx must be >= 0.\n")
   }
   
   # calculate Demetrius' entropy

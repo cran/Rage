@@ -4,14 +4,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setupDarwin, include=FALSE, eval = Sys.info()[["sysname"]] == "Darwin"----
-#The following line seems to be required by pkgdown::build_site() on my machine, but causes build to break with R-CMD-CHECK on GH
-knitr::opts_chunk$set(dev = "png", dev.args = list(type = "cairo-png"))
-
 ## -----------------------------------------------------------------------------
-library(Rage)  # load Rage
-data(mpm1)     # load data object 'mpm1'
-mpm1           # display the contents
+library(Rage) # load Rage
+data(mpm1) # load data object 'mpm1'
+mpm1 # display the contents
 
 ## -----------------------------------------------------------------------------
 dimnames(mpm1$matU)
@@ -38,18 +34,22 @@ plot(lx, ylim = c(0, 1), type = "l", xlab = "Age")
 plot(mx, type = "l", xlab = "Age")
 
 ## -----------------------------------------------------------------------------
-
 library(Rcompadre)
 data(Compadre)
+
+# In older versions of Com(p)adre the ProjectionInterval column was called AnnualPeriodicity.
+if ("AnnualPeriodicity" %in% names(Compadre)) {
+  Compadre$ProjectionInterval <- Compadre$AnnualPeriodicity
+}
 
 comp_flag <- cdb_flag(Compadre, "check_NA_U")
 
 comp_use <- subset(comp_flag, OrganismType == "Tree" &
-                     check_NA_U == FALSE &
-                     AnnualPeriodicity == 1)
+  check_NA_U == FALSE &
+  ProjectionInterval == 1)
 
 ## -----------------------------------------------------------------------------
-CompadreData(comp_use)[,c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
+CompadreData(comp_use)[, c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
 
 ## -----------------------------------------------------------------------------
 # add column ID-ing matrices with same MatrixClassAuthor vector
@@ -59,7 +59,7 @@ comp_use$stage_id <- cdb_id_stages(comp_use)
 comp_collapse <- cdb_collapse(comp_use, "stage_id")
 
 # check species/populations again
-CompadreData(comp_collapse)[,c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
+CompadreData(comp_collapse)[, c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
 
 ## -----------------------------------------------------------------------------
 MatrixClassOrganized(comp_collapse)
@@ -70,22 +70,24 @@ comp_collapse$start_life <- mpm_first_active(comp_collapse)
 ## ---- fig.width = 6, fig.height = 4-------------------------------------------
 
 lx_list <- lapply(seq_len(nrow(comp_collapse)),
-                   function(x, comp_collapse) {
-                     
-                     U <- matU(comp_collapse$mat[[x]])
-                    
-                    rownames(U) <- colnames(U) #ensure row and col names are present
-                     
-                     mpm_to_lx(
-                       matU = U,
-                       start = comp_collapse$start_life[x],
-                       xmax = 40
-                     )
-                   },
-                   comp_collapse = comp_collapse)
+  function(x, comp_collapse) {
+    U <- matU(comp_collapse$mat[[x]])
+
+    rownames(U) <- colnames(U) # ensure row and col names are present
+
+    mpm_to_lx(
+      matU = U,
+      start = comp_collapse$start_life[x],
+      xmax = 40
+    )
+  },
+  comp_collapse = comp_collapse
+)
 
 lx_array <- do.call(cbind, lx_list)
 
-matplot(lx_array, type = "l", lty = 1, log = "y", ylim = c(0.0001, 1),
-        lwd = 1.5, xlab = "Age (years)", ylab = "lx")
+matplot(lx_array,
+  type = "l", lty = 1, log = "y", ylim = c(0.0001, 1),
+  lwd = 1.5, xlab = "Age (years)", ylab = "lx"
+)
 

@@ -4,10 +4,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setupDarwin, include=FALSE, eval = Sys.info()[["sysname"]] == "Darwin"----
-#The following line seems to be required by pkgdown::build_site() on my machine, but causes build to break with R-CMD-CHECK on GH
-knitr::opts_chunk$set(dev = "png", dev.args = list(type = "cairo-png"))
-
 ## -----------------------------------------------------------------------------
 library(Rage)  # load Rage
 data(mpm1)     # load data object 'mpm1'

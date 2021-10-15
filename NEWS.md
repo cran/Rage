@@ -1,3 +1,12 @@
+# Rage 1.2.0
+
+* Improved documentation of `mpm_to_table` and related functions.
+* Standardised the `lx_crit`, `conv` and `xmax` argument values across age-from-stage functions.
+* Minor edits to documentation for stylistic consistency.
+* Removed dependency on the package `popbio`.
+* Added vignette with suggested quality control.
+
+
 # Rage 1.1.0
 
 * Removed the vignette that made heavy use of `ggtern` package. This package was not available for some builds of R and thus caused problems for CRAN.
