@@ -15,29 +15,42 @@
 <meta name="author" content="Rob Salguero-Gomez" />
 <meta name="author" content="Others" />
 
-<meta name="date" content="2021-10-15" />
+<meta name="date" content="2023-01-17" />
 
 <title>Deriving life history traits from an MPM</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -55,55 +68,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -130,7 +142,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -142,22 +334,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">Deriving life history traits from an MPM</h1>
+<h1 class="title toc-ignore">Deriving life history traits from an
+MPM</h1>
 <h4 class="author">Patrick Barks</h4>
 <h4 class="author">Judy Che-Castaldo</h4>
 <h4 class="author">Rob Salguero-Gomez</h4>
 <h4 class="author">Others</h4>
-<h4 class="date">2021-10-15</h4>
+<h4 class="date">2023-01-17</h4>
 
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The aim of this vignette is to provide further details on the functions in <code>Rage</code> for estimating life history traits and on the traits themselves. Life history describes the sequence and pattern of the key events in an organism’s life cycle, pertaining to the schedule of survival, development, and reproduction. By aggregating individual-level demographic rates into an MPM, we can calculate a set of life history traits to describe the expected patterns for individuals within the population. These calculations follow methods from Caswell (2001) and Morris &amp; Doak (2003).</p>
+<p>The aim of this vignette is to provide further details on the
+functions in <code>Rage</code> for estimating life history traits and on
+the traits themselves. Life history describes the sequence and pattern
+of the key events in an organism’s life cycle, pertaining to the
+schedule of survival, development, and reproduction. By aggregating
+individual-level demographic rates into an MPM, we can calculate a set
+of life history traits to describe the expected patterns for individuals
+within the population. These calculations follow methods from Caswell
+(2001) and Morris &amp; Doak (2003).</p>
 </div>
 <div id="loading-mpms-and-basic-anatomy" class="section level2">
 <h2>Loading MPMs and basic anatomy</h2>
-<p>We will start by loading the <code>Rage</code> package and an example MPM included in the package called <code>mpm1</code>, which we’ll be using throughout this vignette.</p>
+<p>We will start by loading the <code>Rage</code> package and an example
+MPM included in the package called <code>mpm1</code>, which we’ll be
+using throughout this vignette.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rage)  <span class="co"># load Rage</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mpm1)     <span class="co"># load data object &#39;mpm1&#39;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mpm1           <span class="co"># display the contents</span></span>
@@ -176,26 +379,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; medium     0     0    0.0   0.0       0</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; large      0     0    0.0   0.0       0</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dormant    0     0    0.0   0.0       0</span></span></code></pre></div>
-<p>Although we demonstrate these trait calculations using a single MPM, each function can be applied to a set of MPMs for comparative analysis of life histories across species and populations. See the vignette “The functionality of RCompadre and Rage” for an example looking at longevity in mammal species across different ecoregions and taxonomic orders.</p>
+<p>Although we demonstrate these trait calculations using a single MPM,
+each function can be applied to a set of MPMs for comparative analysis
+of life histories across species and populations.</p>
 </div>
 <div id="survival-and-lifespan-traits" class="section level2">
 <h2>Survival and lifespan traits</h2>
-<p>Two life history traits pertaining to survival that can be estimated using functions in <code>Rage</code> are mean life expectancy and longevity. Assuming that there is no trade-off between survival and reprdouction, these functions do not require information about reproduction. Instead, they only require a <strong>U</strong> matrix (supplied to the functions’ <code>matU</code> argument).</p>
-<p>The function <code>life_expect_mean()</code> estimates mean life expectancy, or the mean time to death, and the variance in time to death can be obtained using <code>life_expect_var()</code>.</p>
+<p>Two life history traits pertaining to survival that can be estimated
+using functions in <code>Rage</code> are mean life expectancy and
+longevity. Assuming that there is no trade-off between survival and
+reproduction, these functions do not require information about
+reproduction. Instead, they only require a <strong>U</strong> matrix
+(supplied to the functions’ <code>matU</code> argument).</p>
+<p>The function <code>life_expect_mean()</code> estimates mean life
+expectancy, or the mean time to death, and the variance in time to death
+can be obtained using <code>life_expect_var()</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_mean</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="dv">1</span>)  <span class="co"># mean life expectancy from &quot;seed&quot; stage</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.250506</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_var</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="dv">1</span>)   <span class="co"># variance in life expectancy from &quot;seed&quot; stage</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 19.23639</span></span></code></pre></div>
-<p>Life expectancy is dependent on a starting stage, which is specified using the <code>start</code> argument. That is, the expected time to death will be different for an individual that is currently in the first stage (i.e., <code>start = 1</code>) than if it is in a later stage along its life cycle. This is because the latter assumes the individual has survived to that stage, and it has already lived a portion of its lifespan. In the example MPM, life expectancy from the first stage (“seed”) is shorter than that from the second stage (“small”) due to the relatively low probability of survival in the seed stage, reducing the expected time to death.</p>
+<p>Life expectancy is dependent on a starting stage, which is specified
+using the <code>start</code> argument. That is, the expected time to
+death will be different for an individual that is currently in the first
+stage (i.e., <code>start = 1</code>) than if it is in a later stage
+along its life cycle. This is because the latter assumes the individual
+has survived to that stage, and it has already lived a portion of its
+lifespan. In the example MPM, life expectancy from the first stage
+(“seed”) is shorter than that from the second stage (“small”) due to the
+relatively low probability of survival in the seed stage, reducing the
+expected time to death.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_mean</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="dv">2</span>)  <span class="co"># mean life expectancy from &quot;small&quot; stage</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.509116</span></span></code></pre></div>
-<p>Sometimes one may want to include multiple starting stage classes when calculating life expectancy. For example, life expectancy from reproductive maturity (i.e. first reproduction) can be calculated while accounting for the possibility that an individual may first reproduce in one of several stages. In this case, the <code>start</code> argument can be specified as a vector (of the same length as the matrix dimension) giving the proportion of individuals starting in each stage. For example, life expectancy given 40% of individuals start from the “small” stage and 60% from the “medium” stage of the example MPM would be calculated as:</p>
+<p>Sometimes one may want to include multiple starting stage classes
+when calculating life expectancy. For example, life expectancy from
+reproductive maturity (i.e. first reproduction) can be calculated while
+accounting for the possibility that an individual may first reproduce in
+one of several stages. In this case, the <code>start</code> argument can
+be specified as a vector (of the same length as the matrix dimension)
+giving the proportion of individuals starting in each stage. For
+example, life expectancy given 40% of individuals start from the “small”
+stage and 60% from the “medium” stage of the example MPM would be
+calculated as:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_mean</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.4</span>,<span class="fl">0.6</span>,<span class="dv">0</span>,<span class="dv">0</span>))    </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.865667</span></span></code></pre></div>
-<p>The function <code>longevity()</code> estimates the time to which the survivorship of a cohort falls below a user-defined critical threshold, specified as a value (between 0 and 1) supplied to the <code>lx_crit</code> argument. The specifications regarding the <code>start</code> argument for <code>life_expect()</code> also applies to this function. Using the example MPM, the post-germination years until survivorship falls to below 5% would be calculated as:</p>
+<p>The function <code>longevity()</code> estimates the time to which the
+survivorship of a cohort falls below a user-defined critical threshold,
+specified as a value (between 0 and 1) supplied to the
+<code>lx_crit</code> argument. The specifications regarding the
+<code>start</code> argument for <code>life_expect()</code> also applies
+to this function. Using the example MPM, the post-germination years
+until survivorship falls to below 5% would be calculated as:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">longevity</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="dv">2</span>, <span class="at">lx_crit =</span> <span class="fl">0.05</span>)  </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 7</span></span></code></pre></div>
-<p>Similarly to the mean life expectancy function, here one too can examine how longevity differs depending on the starting stage. With the example MPM, longevity increases from 2 years to 7 years after an individual germinates. Longevity is highest for the “medium” and “large” stages, but is the same for individuals starting in the “small” stage as those starting in the “dormant” stage.</p>
+<p>Similarly to the mean life expectancy function, here one too can
+examine how longevity differs depending on the starting stage. With the
+example MPM, longevity increases from 2 years to 7 years after an
+individual germinates. Longevity is highest for the “medium” and “large”
+stages, but is the same for individuals starting in the “small” stage as
+those starting in the “dormant” stage.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>longval <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>startvec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(mpm1<span class="sc">$</span>matU)[<span class="dv">1</span>])   <span class="co"># vector of starting stages</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -210,21 +451,60 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="reproduction-and-maturation-traits" class="section level2">
 <h2>Reproduction and maturation traits</h2>
-<p>In addition how long individuals can be expected to live, species and populations also differ in how quickly and often they reproduce, and how many offspring are produced and recruited into the population. Several related traits measure these various aspects of reproduction, and they require information contained in the <strong>F</strong> submatrix as well as the <strong>U</strong> submatrix.</p>
-<p>The net reproductive rate, <em>R<sub>0</sub></em> is the cumulative number of offspring that a newborn individual will produce over its lifetime.</p>
+<p>In addition how long individuals can be expected to live, species and
+populations also differ in how quickly and often they reproduce, and how
+many offspring are produced and recruited into the population. Several
+related traits measure these various aspects of reproduction, and they
+require information contained in the <strong>F</strong> submatrix as
+well as the <strong>U</strong> submatrix.</p>
+<p>The net reproductive rate, <em>R<sub>0</sub></em> is the cumulative
+number of offspring that a newborn individual will produce over its
+lifetime.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">net_repro_rate</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">matR =</span> mpm1<span class="sc">$</span>matF)            </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.852091</span></span></code></pre></div>
-<p>This life history trait is also called the the per-generation growth rate, because if an individual produces more than one offspring, it more than replaces itself and so the population will grow. Note that this growth rate is different than the population growth rate $because the units of <em>R<sub>0</sub></em> are in generations rather than absolute time (i.e., the time step of the transition matrix, often 1 year). The length of time for one generation, or the generation time (<em>T</em>), can be obtained by:</p>
+<p>This life history trait is also called the the per-generation growth
+rate, because if an individual produces more than one offspring, it more
+than replaces itself and so the population will grow. Note that this
+growth rate is different than the population growth rate $because the
+units of <em>R<sub>0</sub></em> are in generations rather than absolute
+time (i.e., the time step of the transition matrix, often 1 year). The
+generation time (<em>T</em>) can thus be defined as the amount of time
+it takes for a population to grow by a factor of <em>R<sub>0</sub></em>,
+which can be obtained by:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gen_time</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">matR =</span> mpm1<span class="sc">$</span>matF)    </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5.394253</span></span></code></pre></div>
-<p>The age at reproductive maturity is the average amount of time an individual will take to enter a reproductive stage for the first time in the population. Similar to life expectancy, mean time to reproduction will depend on the starting stage, again specified using the <code>start</code> argument. In the case of the example MPM where the first stage is “seed”, one may be more interested in estimating the time to reproduction for individuals that have already germinated (i.e., <code>start = 2</code>).</p>
+<p>Generations may be bounded using different criteria, leading to
+estimates of <em>T</em> that are identical only for organisms that
+reproduce once at a uniform age. Alternative methods for calculating the
+generation time can be selected using the <code>method</code> argument.
+Currently supported are (<em>i</em>) the average age difference between
+parents and offspring (<code>method = &quot;age_diff&quot;</code>) and
+(<em>ii</em>) the expected age at which members of a cohort reproduce
+(<code>method = &quot;cohort&quot;</code>).</p>
+<p>The age at reproductive maturity is the average amount of time an
+individual will take to enter a reproductive stage for the first time in
+the population. Similar to life expectancy, mean time to reproduction
+will depend on the starting stage, again specified using the
+<code>start</code> argument. In the case of the example MPM where the
+first stage is “seed”, one may be more interested in estimating the time
+to reproduction for individuals that have already germinated (i.e.,
+<code>start = 2</code>).</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mature_age</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">matR =</span> mpm1<span class="sc">$</span>matF, <span class="at">start =</span> <span class="dv">2</span>)     </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    small </span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2.136364</span></span></code></pre></div>
-<p>The probability of reaching reproductive maturity before death, for individuals that have already become established (e.g. germinated in the case of plants in this particular example), is:</p>
+<p>The probability of reaching reproductive maturity before death, for
+individuals that have already become established (e.g. germinated in the
+case of plants in this particular example), is:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mature_prob</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">matR =</span> mpm1<span class="sc">$</span>matF, <span class="at">start =</span> <span class="dv">2</span>)   </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.4318182</span></span></code></pre></div>
-<p>As discussed above, there may be multiple stages in which an individual can first reproduce. One can also use an MPM to estimate the proportion of individuals that would be expected to first reproduce in each of the reproductive stage classes. For this, we need to specify which stages are reproductive in the <code>repro_stages</code> argument. This can be determined from the <strong>F</strong> matrix based on the columns that have non-zero values, or a non-zero probability of producing offspring.</p>
+<p>As discussed above, there may be multiple stages in which an
+individual can first reproduce. One can also use an MPM to estimate the
+proportion of individuals that would be expected to first reproduce in
+each of the reproductive stage classes. For this, we need to specify
+which stages are reproductive in the <code>repro_stages</code> argument.
+This can be determined from the <strong>F</strong> matrix based on the
+columns that have non-zero values, or a non-zero probability of
+producing offspring.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mpm1<span class="sc">$</span>matF <span class="co"># We see that the &quot;medium&quot; and &quot;large&quot; stages are reproductive</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         seed small medium large dormant</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; seed       0     0   17.9  45.6       0</span></span>
@@ -237,21 +517,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>maturedist</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       seed      small     medium      large    dormant </span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.00000000 0.00000000 0.92105263 0.07894737 0.00000000</span></span></code></pre></div>
-<p>One can then use this distribution to update the estimate of mean life expectancy from reproductive maturity, using the data-based distribution rather than the hypothetical one (40% in “small” stage and 60% in “medium” stage) used above:</p>
+<p>One can then use this distribution to update the estimate of mean
+life expectancy from reproductive maturity, using the data-based
+distribution rather than the hypothetical one (40% in “small” stage and
+60% in “medium” stage) used above:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_mean</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="fu">c</span>(maturedist))   <span class="co"># mean life expectancy from maturity</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 3.179005</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">life_expect_mean</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="dv">2</span>)       <span class="co"># mean life expectancy from &quot;small&quot; stage</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.509116</span></span></code></pre></div>
-<p>In doing so, mean life expectancy from maturity is 0.67 years longer than that after germination (from “small” stage). In this case, this difference is due to the higher average survival once an individual reaches reproductive maturity.</p>
+<p>In doing so, mean life expectancy from maturity is 0.67 years longer
+than that after germination (from “small” stage). In this case, this
+difference is due to the higher average survival once an individual
+reaches reproductive maturity.</p>
 </div>
 <div id="life-table-component-traits" class="section level2">
 <h2>Life table component traits</h2>
-<p>Other life history traits are calculated from a life table rather than an MPM, in which case one can first use the <code>mpm_to_</code> group of functions to derive the necessary life table components: age-specific survivorship (<em>lx</em>), survival probability (<em>px</em>), mortality hazard (<em>hx</em>), and reproduction (<em>mx</em>). As above, start stage can too be specified as a specific stage (by number or by name), as well as a vector of proportions in each stage. One can calculate the age-specific rates for post-germination individuals using the example MPM:</p>
+<p>Other life history traits are calculated from a life table rather
+than an MPM, in which case one can first use the <code>mpm_to_</code>
+group of functions to derive the necessary life table components:
+age-specific survivorship (<em>lx</em>), survival probability
+(<em>px</em>), mortality hazard (<em>hx</em>), and reproduction
+(<em>mx</em>). As above, start stage can too be specified as a specific
+stage (by number or by name), as well as a vector of proportions in each
+stage. One can calculate the age-specific rates for post-germination
+individuals using the example MPM:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lx <span class="ot">&lt;-</span> <span class="fu">mpm_to_lx</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="st">&quot;small&quot;</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>px <span class="ot">&lt;-</span> <span class="fu">mpm_to_px</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="st">&quot;small&quot;</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>hx <span class="ot">&lt;-</span> <span class="fu">mpm_to_hx</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="st">&quot;small&quot;</span>)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mx <span class="ot">&lt;-</span> <span class="fu">mpm_to_mx</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">matR =</span> mpm1<span class="sc">$</span>matF, <span class="at">start =</span> <span class="st">&quot;small&quot;</span>)</span></code></pre></div>
-<p>There are multiple applications for these life table estimates. For example, one can visualize the difference in survival curves for individuals starting from the seed stage compared to survival post-germination.</p>
+<p>There are multiple applications for these life table estimates. For
+example, one can visualize the difference in survival curves for
+individuals starting from the seed stage compared to survival
+post-germination.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lx_seed <span class="ot">&lt;-</span> <span class="fu">mpm_to_lx</span>(<span class="at">matU =</span> mpm1<span class="sc">$</span>matU, <span class="at">start =</span> <span class="st">&quot;seed&quot;</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lx, <span class="at">xlab=</span><span class="st">&quot;Survival time (years)&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Survivorship&quot;</span>, <span class="at">type=</span><span class="st">&quot;s&quot;</span>, <span class="at">col=</span><span class="st">&quot;black&quot;</span>)</span>
@@ -259,20 +556,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">inset=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.05</span>), <span class="fu">c</span>(<span class="st">&quot;From seed stage&quot;</span>, <span class="st">&quot;From small stage&quot;</span>), </span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;orange&quot;</span>,<span class="st">&quot;black&quot;</span>))</span></code></pre></div>
 <p><img src="data:image/png;base64,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fPPNhV7VzOtnKXlD4JhjjrF77LGHlV5BXJkjR460cgft5MmT445HYUfIxB544IEpq/rYY49p23799deUafJ54qijjrLDhw/PZ5FlKuu3336z0mO0X3zxRZnyKdSL2QPKnLsDX4legLyIpa7D11heVNOgQQM9h+HBPvvsY77//vu4tPvuu6/2nHBw2rRp5oADDjCTJk0y2267rWnTpo259NJLzSmnnBJ3DXa6d+9u+vXrp8cPOeQQM3r0aPPXX3/p0GnEiBFx6VevXq1lv/7663p86dKlpmPHjqZhw4Zm8803N3vvvbcZO3Zs3DWpdsaPH2+uueYaPY1h2iOPPKLbTh2wc8MNN2iahx9+2Oy+++5m6623NhdccIGRF8YMGTLENGnSxDRt2tTceeedeq3zT15M7VlhOFu7dm1z3HHHeep13n77bfPqq6+aY489VrOZOXOmtvWDDz5wstVfpEGPFDoYyMcff2yOPPJIU6NGDbPjjjuaq666yvz99996zvn3/PPPGyFiTVOvXj0jRGcWLVrknDb9+/c31157rbniiitMnTp19Bcn77//frPzzjubqlWrmj333NPcfffdsWuwsemmm2qPGdcWpRQqMxZjvR599FHtDQiR2AcffNAuX748aTPlYdZ0q1atijtfoUIFKy+lHpswYYKtWLGiFdKynTp1suhdybBOr3N/Lb/55htNJ6Sh10m33t566626fdJJJ1nUxS2ir7FVqlSxoiS3P//8s359heisEJXWuWXLllqGvJR6Wboe0KeffmrPOeccTT906FArwx+9xl0HIUdbt25du9NOO9l7773X9uzZU9OL7sPKi2mFeGyPHj30mBCFXo8eJOpRq1Yte/XVV2u70QuTF9uKvsTdnLjtvn376nXOQSFhW7NmTdunTx/nkP6efPLJ9vDDD9fthQsXKh7NmzdXDIQwrBCR7dKlS+yaZ555RuuHtmJbyMJutdVWdtddd42lOf300+0222xj5WOh14oezr744ot63ZVXXmlxzy+55BLdFzKOXYeNYcOGaVvjDhbJDr40lDwi8NBDD+lLLV8zfdh22WUXfWDR1XbELwEhD+lBOJfZP/74w4py295+++2xY3hhNttsM+vk7375X3jhBa2Dm7Ckd2LxAkJeeuklKz2fuO4/SAXl4qWApCMgnE82BHPXAQSE/BYsWIDkKtKr0WNLlixxDllR2MfaKop8PQ8SdgTtk96CEpJzLPFXej5aX/fx8847T9voHEM+0huxGBZDZIJACQfYOuIQvUOIotS27du3d07r70033aR1lMkF3QcBoZ0gNEdE/2elR+Xs6i/IcMyYMXHH3njjDb32u+++izteDDscgslTkU85++yzzcqVK83EiRN1qIGu/PXXX6/d7K+//jpwVTD0cqRy5co6XIKC2xHMuh1//PHalXeOOb/y0hjpAcSGdSgfwz8oiSE4jyEYhoaYxZo7d64RPZWRnpj5/fffnWzK/IshiRBxLB8oyaVHZBo3bhw7Jr0Hs3jxYt3HUAqziBh6zZkzR//kxTZ77bWXKvZjFyVsYEiEfNyCtgoBm1mzZulh6ZWowvyEE07QfeCBSYP58+fHykJ9gcH06dM1DYZNQta6jWEz6ufU1Y2T9PR0SKkJ5R+G2UjXoUMHHdZiJnTgwIHmtNNOc5Lor1NntLHYpFKxNSgK7QFRQEeAPwh0IyCme+65J/CMB6by3QJ90qGHHqov1SabbGKmTp0aeznc6bC90UYbGRm+GcxUYTZOhg8GU+Tt2rWLJZWhopGhkeozZMhnWrRoofoZ+frG0pR1w3nBnHxQDnRObsExR0AYMjxUPY1zzPlNvM45DnOAzz//3MjQyDmkv61atVKzCGCAtoGwQQggOJAHdGLQ7+AvUb788ks99NNPP6leCGlk2Kx6oO22207PuXFKvFfS09T7BLMIEFilSpX0mZDhqoEeyREQF0R6hKpnco4Xwy97QHm6i5999pkqH50vpbtYfPHQkwFZQEpKSvTXrejEC4eXKFHcLybOHXzwwaqUfvbZZ5VQ0EsQfUbiZbF9EBa+/niZ8BKCkEBMEBDjueeeqz0AKGbxhYbSG+J+sfRAGf4ltsErKxnCKUFBoS9Dprg/GcolvRw9FhBysl6m6HMM8EJeL7/8ssE+RHRhBh8L0c3EleGUeeONN2o63D+YWEDBjF6iDJV0QkBPuv4layeuET2dkWGWKtXxC7swtzh1hkK62IQElKc7iuEEXmzRncTZxKB4zI5hqIPZHghmRCDuWTC/3W+8aHiBMAP13HPPqd1RsgdfC5B/mEnDTJLoPHT44gy/cB5f9N12201namAQhxcAdjQgH7ddj5NXsl+HTJORZ7L0fo6hTugFgWxQJ/yBLC666CIjOraUWaAnITqsUudBwsD/vvvuU5JCDwiCumMWDjg45eAXhAB7LsyeYTbxlVde0bJRPmbycB1sjSDpbLsws3fZZZfpc4FeK4ZysPvBsNKNl1NnpyekGRfJPxJQHm+kzMIoMbRt21Z7F+h54Mt7xBFHqFtGt27dtDYgIpAVpm7xomG6WGaHYj0TryrjhYJ+Aj0qN6Gkug5poHuArgeE5AiGJ3j43333XX0hPvzww5h+wq3bcNIn+xUFuB4eN26ckVm/ZEkCH5PZJh0q4oV/7bXXlKgHDBigJOquf2LGMnOWlIBAMjLLZURxrDo09JQcwZQ7yKlXr14GvVjokWDWgG3onDbeeGPV5aAeICbgApMKZzpdlNdOVqV+Mf0OEpLZUQPXHOALMtt///1Vx+RcgHuAclBe0Yl8zSh5RECGOVa+4FYIRmc28Cu2NVbIKK4WmKbHbIw8cFbsbyxmz+RFiZuGx7lUU/miyNWp7bhMZcc9A+Wck5dKy8GUtlswpS32NToNLS+lTpePGjXKik2MlV6CJhXySmuIiFkgsW/R/OUl1mvcdcAsmChj3cVaUZprGe6DQoZWCDp2aPbs2bF8pcdhMU2Oqf50AlMEeZFjM4LutIMHD9Y6iv2T+7BuYyYRxoDAGyYKaDvKdwSzVKI/stL71PxR17feekvNH4AXBLNgMB1IFJgG7LDDDpo3rpehuF2xYkVcMrTbMQuIO1EEO+hOU0JA4M8//7TyZdOp81TFS/fdiuLU4jdMwdR0KqLzWy8Qkei0/Cb3nQ4kmWgvlepimcmzmOIXZX+pJIMGDdKpfhlaljqHAzIksqIns9LDSXoeB1EP2E5lIsA3mbW4KMGV9EQ3lUm2BX9NCWpYdN06NogIpEAAQ17M+GH6G7NOUGRDCQwdF2YiHcvtFJfn/fB1111npLelZht5LzwPBZKA8gAyiygsBDDjCD0S3FYwawi7HeiAoDODkrlQBPokTF68+eabcfZDhVK/bNSDBJQNFJlHpBCAPRBiMcHAELN6MAzFNmbSCklQL8cPrZDqlc26kICyiSbzIgJEIBACnIYPBBcTEwEikE0ESEDZRJN5EQEiEAgBElAguJiYCBCBbCJAAsommsyLCBCBQAiQgALBxcREgAhkEwESUDbRZF5EgAgEQoAEFAguJiYCRCCbCJCAsokm8yICRCAQAiSgQHAxMREgAtlEgASUTTSZFxEgAoEQIAEFgouJiQARyCYCJKBsosm8iAARCIQACSgQXExMBIhANhEgAWUTTeZFBIhAIARIQIHgYmIiQASyiQAJKJtoMi8iQAQCIUACCgQXExMBIpBNBEhA2USTeREBIhAIARJQILiYmAgQgWwi8P+2nvf1nyB/PwAAAABJRU5ErkJggg==" /><!-- --></p>
-<p>In this case, there is a large drop in survival (and thus high mortality) in the first year for seeds. Specifically, more than 80% of seeds are not expected to survive their first year, compared to germinated individuals that have a 50% chance of surviving their first year.</p>
-<p>Finally, one can use these life table components to calculate additional life history traits related to the types of survival and reproduction trajectories.</p>
-<p>Demetrius’ entropy is a measure of how reproductive episodes are spread across the lifespan (Demetrius &amp; Gundlach 2014). A value of 0 indicates only one reproduction event in the entire life time (also known as semelparity), and larger values indicate a more even distribution of reproductive events over the life cycle.</p>
-<p>Keyfitz’ entropy describes the shape of the age-specific survivorship curve (Demetrius 1978). Values greater than 1 correspond to survival curves type I (high survival in early part of life and decreasing over time), a value of 1 to survival curve type II (constant survival), and values less than 1 to survival curve type III (low survival early and increasing over time) (Salguero-Gómez et al. 2016).</p>
+<p>In this case, there is a large drop in survival (and thus high
+mortality) in the first year for seeds. Specifically, more than 80% of
+seeds are not expected to survive their first year, compared to
+germinated individuals that have a 50% chance of surviving their first
+year.</p>
+<p>Finally, one can use these life table components to calculate
+additional life history traits related to the types of survival and
+reproduction trajectories.</p>
+<p>Demetrius’ entropy is a measure of how reproductive episodes are
+spread across the lifespan (Demetrius &amp; Gundlach 2014). A value of 0
+indicates only one reproduction event in the entire life time (also
+known as semelparity), and larger values indicate a more even
+distribution of reproductive events over the life cycle.</p>
+<p>Keyfitz’ entropy describes the shape of the age-specific survivorship
+curve (Demetrius 1978). Values greater than 1 correspond to survival
+curves type I (high survival in early part of life and decreasing over
+time), a value of 1 to survival curve type II (constant survival), and
+values less than 1 to survival curve type III (low survival early and
+increasing over time) (Salguero-Gómez et al. 2016).</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">entropy_d</span>(lx, mx)   <span class="co"># Demetrius&#39; entropy</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -1.426434</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.062862</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">entropy_k</span>(lx)       <span class="co"># Keyfitz&#39; entropy</span></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.9077186</span></span></code></pre></div>
-<p>It is important to note that both of these entropy measures may produce unexpected results if only partial survivorship and fecundity age-based trajectories are used in the calculations. Indeed, both metrics of demographic entropy are sensitive to the length of the those trajectory vectors. For example, the Demetrius’ entropy calculated above has a negative value due to being calculated from age-specific survivorships and fecundities starting from the “small” stage, and therefore it does not include the full life cycle.</p>
-<p>A more robust way to describe these trajectories is using the area under the curve method.</p>
+<p>It is important to note that both of these entropy measures may
+produce unexpected results if only partial survivorship and fecundity
+age-based trajectories are used in the calculations. Indeed, both
+metrics of demographic entropy are sensitive to the length of the those
+trajectory vectors. For example, the Demetrius’ entropy calculated above
+has a negative value due to being calculated from age-specific
+survivorships and fecundities starting from the “small” stage, and
+therefore it does not include the full life cycle.</p>
+<p>A more robust way to describe these trajectories is using the area
+under the curve method.</p>
 </div>
 <div id="shape-of-mortality-and-fecundity" class="section level2">
 <h2>Shape of mortality and fecundity</h2>
-<p>A life course can be described in terms of its pace (timing of events) and its shape (the distribution of events, either for an individual or for a population). There are several candidate metrics for the pace and shape of mortality, and of fertility. A good measure of the pace of mortality is life expectancy (the average age of death) and a good measure of the shape of mortality are the life-table entropy measures mentioned above, which describe both the survivorship curve and the mortality trajectory (see Baudisch 2011). Measures describing the pace and shape of fertility have also been developed (Baudisch &amp; Stott 2019). In addition to the entropy measures described above, the <code>shape_</code> functions are also useful metrics.</p>
+<p>A life course can be described in terms of its pace (timing of
+events) and its shape (the distribution of events, either for an
+individual or for a population). There are several candidate metrics for
+the pace and shape of mortality, and of fertility. A good measure of the
+pace of mortality is life expectancy (the average age of death) and a
+good measure of the shape of mortality are the life-table entropy
+measures mentioned above, which describe both the survivorship curve and
+the mortality trajectory (see Baudisch 2011). Measures describing the
+pace and shape of fertility have also been developed (Baudisch &amp;
+Stott 2019). In addition to the entropy measures described above, the
+<code>shape_</code> functions are also useful metrics.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shape_surv</span>(lx)      <span class="co"># shape of survival/mortality trajectory</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.04681254</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">shape_rep</span>(mx)       <span class="co"># shape of fecundity trajectory</span></span>
@@ -280,13 +610,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>Baudisch, A. 2011. The pace and shape of ageing. Methods in Ecology and Evolution, 2(4), 375– 382. <a href="https://doi.org/10.1111/j.2041-210X.2010.00087.x" class="uri">https://doi.org/10.1111/j.2041-210X.2010.00087.x</a></p>
-<p>Baudisch, A, Stott, I. 2019. A pace and shape perspective on fertility. Methods Ecol Evol. 10: 1941– 1951. <a href="https://doi.org/10.1111/2041-210X.13289" class="uri">https://doi.org/10.1111/2041-210X.13289</a></p>
-<p>Caswell, H. 2001. Matrix Population Models: Construction, Analysis, and Interpretation. 2nd edition. Sinauer Associates, Sunderland, MA. ISBN-10: 0878930965</p>
-<p>Demetrius, L. 1978. Adaptive value, entropy and survivorship curves. Nature 275: 213-214.</p>
-<p>Demetrius, L., &amp; Gundlach, V. M. 2014. Directionality theory and the entropic principle of natural selection. Entropy 16: 5428-5522.</p>
-<p>Morris, W. F. &amp; Doak, D. F. 2003. Quantitative Conservation Biology: Theory and Practice of Population Viability Analysis. Sinauer Associates, Sunderland, MA. ISBN-10: 0878935460</p>
-<p>Salguero-Gómez, R., Jones, O. R., Jongejans, E., Blomberg, S. P., Hodgson, D. J., Mbeau-Ache, C., Zuidema, P. A., de Kroon, H., &amp; Buckley, Y. M. 2016. Fast–Slow continuum and reproductive strategies structure plant life-history variation worldwide. Proceedings of the National Academy of Sciences 113 (1): 230–35</p>
+<p>Baudisch, A. 2011. The pace and shape of ageing. Methods in Ecology
+and Evolution, 2(4), 375– 382. <a href="https://doi.org/10.1111/j.2041-210X.2010.00087.x" class="uri">https://doi.org/10.1111/j.2041-210X.2010.00087.x</a></p>
+<p>Baudisch, A, Stott, I. 2019. A pace and shape perspective on
+fertility. Methods Ecol Evol. 10: 1941– 1951. <a href="https://doi.org/10.1111/2041-210X.13289" class="uri">https://doi.org/10.1111/2041-210X.13289</a></p>
+<p>Caswell, H. 2001. Matrix Population Models: Construction, Analysis,
+and Interpretation. 2nd edition. Sinauer Associates, Sunderland, MA.
+ISBN-10: 0878930965</p>
+<p>Demetrius, L. 1978. Adaptive value, entropy and survivorship curves.
+Nature 275: 213-214.</p>
+<p>Demetrius, L., &amp; Gundlach, V. M. 2014. Directionality theory and
+the entropic principle of natural selection. Entropy 16: 5428-5522.</p>
+<p>Morris, W. F. &amp; Doak, D. F. 2003. Quantitative Conservation
+Biology: Theory and Practice of Population Viability Analysis. Sinauer
+Associates, Sunderland, MA. ISBN-10: 0878935460</p>
+<p>Salguero-Gómez, R., Jones, O. R., Jongejans, E., Blomberg, S. P.,
+Hodgson, D. J., Mbeau-Ache, C., Zuidema, P. A., de Kroon, H., &amp;
+Buckley, Y. M. 2016. Fast–Slow continuum and reproductive strategies
+structure plant life-history variation worldwide. Proceedings of the
+National Academy of Sciences 113 (1): 230–35</p>
 </div>
 
 

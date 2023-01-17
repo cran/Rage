@@ -12,29 +12,42 @@
 
 <meta name="author" content="Patrick Barks" />
 
-<meta name="date" content="2021-10-15" />
+<meta name="date" content="2023-01-17" />
 
 <title>Deriving vital rates from an MPM</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -52,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -127,7 +139,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,19 +333,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Deriving vital rates from an MPM</h1>
 <h4 class="author">Patrick Barks</h4>
-<h4 class="date">2021-10-15</h4>
+<h4 class="date">2023-01-17</h4>
 
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The transition rates that make up matrix population models (MPMs) generally reflect products of two or more vital rates (sometimes called ‘lower-level vital rates’). Assuming a post-breeding census design, we can retroactively break apart each transition rate into at least two vital rate components: survival, and ‘something’ conditional on survival. That ‘something’ might be growth, shrinkage, stasis, dormancy, fecundity, or clonality.</p>
-<p>The <code>vr_</code> group of functions can be used to derive vital rates from any MPM that was initially estimated using a post-breeding census design. The vital rates may be summarized across the entire MPM (<code>vr_</code> functions), summarized within stage classes (<code>vr_vec_</code> functions), or not summarized (<code>vr_mat_</code> functions).</p>
+<p>The transition rates that make up matrix population models (MPMs)
+generally reflect products of two or more vital rates (sometimes called
+‘lower-level vital rates’). Assuming a post-breeding census design, we
+can retroactively break apart each transition rate into at least two
+vital rate components: survival, and ‘something’ conditional on
+survival. That ‘something’ might be growth, shrinkage, stasis, dormancy,
+fecundity, or clonality.</p>
+<p>The <code>vr_</code> group of functions can be used to derive vital
+rates from any MPM that was initially estimated using a post-breeding
+census design. The vital rates may be summarized across the entire MPM
+(<code>vr_</code> functions), summarized within stage classes
+(<code>vr_vec_</code> functions), or not summarized
+(<code>vr_mat_</code> functions).</p>
 </div>
 <div id="preliminaries-constructing-an-mpm-from-lower-level-vital-rates" class="section level2">
 <h2>Preliminaries: Constructing an MPM from lower-level vital rates</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rage)</span></code></pre></div>
-<p>We’ll start by creating an MPM based on a set of underlying vital rates. Our MPM will be separated into a growth/survival component (<code>matU</code>) and a sexual reproduction component (<code>matF</code>), and consist of 4 stage classes: ‘seed’, ‘small’, ‘large’, and ‘dormant’. First we’ll specify the vital rates.</p>
+<p>We’ll start by creating an MPM based on a set of underlying vital
+rates. Our MPM will be separated into a growth/survival component
+(<code>matU</code>) and a sexual reproduction component
+(<code>matF</code>), and consist of 4 stage classes: ‘seed’, ‘small’,
+‘large’, and ‘dormant’. First we’ll specify the vital rates.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## survival probabilities</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fl">0.20</span>  <span class="co"># seed</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fl">0.40</span>  <span class="co"># small</span></span>
@@ -175,7 +382,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="do">## matF vital rates conditional on survival (i.e. fecundity)</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fl">0.4</span>   <span class="co"># small</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fl">1.1</span>   <span class="co"># large</span></span></code></pre></div>
-<p>Next we’ll use the vital rates to construct an MPM, based on a post-breeding census design.</p>
+<p>Next we’ll use the vital rates to construct an MPM, based on a
+post-breeding census design.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># growth/survival component</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>matU <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(s1<span class="sc">*</span>g11,      <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(s1<span class="sc">*</span>g12, s2<span class="sc">*</span>g22,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
@@ -190,17 +398,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="deriving-vital-rates-of-survival" class="section level2">
 <h2>Deriving vital rates of survival</h2>
-<p>Given a post-breeding census design, stage-specific vital rates of survival can be obtained by taking column sums of the <strong>U</strong> matrix (<code>matU</code> in our code). This works out algebraically because the other vital rates within <code>matU</code>, which are conditional on survival, must sum to 1 within a given stage class. We can obtain a vector of stage-specific vital rates of survival using the <code>vr_vec_survival()</code> function, which, for simple cases, is equivalent to <code>colSums()</code>.</p>
+<p>Given a post-breeding census design, stage-specific vital rates of
+survival can be obtained by taking column sums of the <strong>U</strong>
+matrix (<code>matU</code> in our code). This works out algebraically
+because the other vital rates within <code>matU</code>, which are
+conditional on survival, must sum to 1 within a given stage class. We
+can obtain a vector of stage-specific vital rates of survival using the
+<code>vr_vec_survival()</code> function, which, for simple cases, is
+equivalent to <code>colSums()</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(surv <span class="ot">&lt;-</span> <span class="fu">vr_vec_survival</span>(matU))</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2 0.4 0.5 0.3</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># equivalent to...</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>(surv <span class="ot">&lt;-</span> <span class="fu">colSums</span>(matU))</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2 0.4 0.5 0.3</span></span></code></pre></div>
-<p>As expected, these values match the survival probabilities that we initially specified.</p>
+<p>As expected, these values match the survival probabilities that we
+initially specified.</p>
 </div>
 <div id="deriving-vital-rates-conditional-on-survival" class="section level2">
 <h2>Deriving vital rates conditional on survival</h2>
-<p>To obtain the other set of vital rates — vital rates conditional on survival (sometimes called ‘survival-independent vital rates’) — we simply need to divide each column of <code>matU</code> or <code>matF</code> by the corresponding survival probability. This procedure is implemented by the <code>vr_mat_</code> functions.</p>
+<p>To obtain the other set of vital rates — vital rates conditional on
+survival (sometimes called ‘survival-independent vital rates’) — we
+simply need to divide each column of <code>matU</code> or
+<code>matF</code> by the corresponding survival probability. This
+procedure is implemented by the <code>vr_mat_</code> functions.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># matU vital rates conditional on survival</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_mat_U</span>(matU)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
@@ -216,29 +436,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]   NA   NA   NA   NA</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]   NA   NA   NA   NA</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,]   NA   NA   NA   NA</span></span></code></pre></div>
-<p>We’ve now recovered all the vital rates that we initially specified when we constructed our MPM.</p>
+<p>We’ve now recovered all the vital rates that we initially specified
+when we constructed our MPM.</p>
 </div>
 <div id="summarizing-vital-rates-within-stages" class="section level2">
 <h2>Summarizing vital rates within stages</h2>
-<p>The vital rates produced by <code>vr_mat_U()</code> represent a variety of processes, including growth, shrinkage, stasis, and dormancy. To summarize these processes within stage classes we can use the <code>vr_vec_</code> group of functions, which simply sum the vital rates corresponding to a given process within stage classes.</p>
+<p>The vital rates produced by <code>vr_mat_U()</code> represent a
+variety of processes, including growth, shrinkage, stasis, and dormancy.
+To summarize these processes within stage classes we can use the
+<code>vr_vec_</code> group of functions, which simply sum the vital
+rates corresponding to a given process within stage classes.</p>
 <div id="growth-shrinkage-stasis-and-dormancy" class="section level4">
 <h4>Growth, shrinkage, stasis, and dormancy</h4>
-<p>We’ll start by examining vital rates of growth, which will be found in the bottom-left triangle of the <strong>U</strong> matrix. Given the results from <code>vr_mat_U()</code> above, our baseline expectation for the stage-specific vital rates of growth would be 0.20 (0.15 + 0.05), 0.55 (0.45 + 0.10), 0.22, and <code>NA</code>.</p>
+<p>We’ll start by examining vital rates of growth, which will be found
+in the bottom-left triangle of the <strong>U</strong> matrix. Given the
+results from <code>vr_mat_U()</code> above, our baseline expectation for
+the stage-specific vital rates of growth would be 0.20 (0.15 + 0.05),
+0.55 (0.45 + 0.10), 0.22, and <code>NA</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_growth</span>(matU)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.20 0.55 0.22   NA</span></span></code></pre></div>
-<p>However, the calculations above include transitions to the dormant stage class as a component of ‘growth’, because the dormant stage class is represented by the right-most column (and so transitions to the dormant stage are in the bottom-left triangle of <code>matU</code>). To exclude transitions <em>to</em> the dormant stage from our calculation of growth, we can set the <code>exclude_row</code> argument to <code>4</code>, so that any survival-independent transition <em>to</em> stage 4 is excluded from the calculation of growth.</p>
+<p>However, the calculations above include transitions to the dormant
+stage class as a component of ‘growth’, because the dormant stage class
+is represented by the right-most column (and so transitions to the
+dormant stage are in the bottom-left triangle of <code>matU</code>). To
+exclude transitions <em>to</em> the dormant stage from our calculation
+of growth, we can set the <code>exclude_row</code> argument to
+<code>4</code>, so that any survival-independent transition <em>to</em>
+stage 4 is excluded from the calculation of growth.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_growth</span>(matU, <span class="at">exclude_row =</span> <span class="dv">4</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.20 0.45   NA   NA</span></span></code></pre></div>
-<p>Next let’s examine vital rates of shrinkage, which will occur in the top-right triangle of <code>matU</code>. Based again on the results from <code>vr_mat_U()</code>, our naive expectation for vital rates of shrinkage would be <code>NA</code>, <code>NA</code>, <code>NA</code>, 0.5.</p>
+<p>Next let’s examine vital rates of shrinkage, which will occur in the
+top-right triangle of <code>matU</code>. Based again on the results from
+<code>vr_mat_U()</code>, our naive expectation for vital rates of
+shrinkage would be <code>NA</code>, <code>NA</code>, <code>NA</code>,
+0.5.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_shrinkage</span>(matU)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  NA  NA  NA 0.5</span></span></code></pre></div>
-<p>However, in this case, the transition from the dormant stage to the large stage is being mistakenly considered as shrinkage, simply because it’s in the top-right triangle of <code>matU</code>. To exclude transitions <em>from</em> the dormant stage from our calculations, we can set the <code>exclude_col</code> argument to <code>4</code>. Note that we use <code>exclude_row</code> to exclude transitions <em>to</em> a given stage, and <code>exclude_col</code> to exclude transitions <em>from</em> a given stage.</p>
+<p>However, in this case, the transition from the dormant stage to the
+large stage is being mistakenly considered as shrinkage, simply because
+it’s in the top-right triangle of <code>matU</code>. To exclude
+transitions <em>from</em> the dormant stage from our calculations, we
+can set the <code>exclude_col</code> argument to <code>4</code>. Note
+that we use <code>exclude_row</code> to exclude transitions <em>to</em>
+a given stage, and <code>exclude_col</code> to exclude transitions
+<em>from</em> a given stage.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_shrinkage</span>(matU, <span class="at">exclude_col =</span> <span class="dv">4</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] NA NA NA NA</span></span></code></pre></div>
-<p>Next let’s calculate vital rates of stasis, which occur along the diagonal of <code>matU</code>. Depending on our purpose, we may or may not consider the dormant to dormant transition as ‘stasis’. If not, we could exclude it using one of the <code>exclude_</code> arguments, as above. But we’ll leave it in for now.</p>
+<p>Next let’s calculate vital rates of stasis, which occur along the
+diagonal of <code>matU</code>. Depending on our purpose, we may or may
+not consider the dormant to dormant transition as ‘stasis’. If not, we
+could exclude it using one of the <code>exclude_</code> arguments, as
+above. But we’ll leave it in for now.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_stasis</span>(matU)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.80 0.45 0.78 0.50</span></span></code></pre></div>
-<p>Finally, let’s calculate vital rates for entering and exiting dormancy. For these, we’ll need to explicitly specify which stage(s) are dormant using the <code>dorm_stages</code> argument.</p>
+<p>Finally, let’s calculate vital rates for entering and exiting
+dormancy. For these, we’ll need to explicitly specify which stage(s) are
+dormant using the <code>dorm_stages</code> argument.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_dorm_enter</span>(matU, <span class="at">dorm_stages =</span> <span class="dv">4</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]   NA 0.10 0.22   NA</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_dorm_exit</span>(matU, <span class="at">dorm_stages =</span> <span class="dv">4</span>)</span>
@@ -246,18 +499,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="fecundity" class="section level4">
 <h4>Fecundity</h4>
-<p>The survival-independent vital rates of fecundity produced by <code>vr_mat_R()</code> are more straightforward to summarize, as they only reflect a single process (i.e. fecundity).</p>
+<p>The survival-independent vital rates of fecundity produced by
+<code>vr_mat_R()</code> are more straightforward to summarize, as they
+only reflect a single process (i.e. fecundity).</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_reproduction</span>(matU, matF)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  NA 0.4 1.1  NA</span></span></code></pre></div>
-<p>In the example MPM we’re using here, individuals produced by fecundity always begin life in the ‘seed’ stage. However, for some life cycles there are multiple stages in which an offspring could begin life. In these cases, it may be desirable to weight the different types of offspring when summing vital rates of fecundity within a stage class (e.g. by their reproductive value). This type of weighting can be accomplished with the <code>weights_row</code> argument.</p>
+<p>In the example MPM we’re using here, individuals produced by
+fecundity always begin life in the ‘seed’ stage. However, for some life
+cycles there are multiple stages in which an offspring could begin life.
+In these cases, it may be desirable to weight the different types of
+offspring when summing vital rates of fecundity within a stage class
+(e.g. by their reproductive value). This type of weighting can be
+accomplished with the <code>weights_row</code> argument.</p>
 </div>
 </div>
 <div id="summarizing-vital-rates-across-stages" class="section level2">
 <h2>Summarizing vital rates across stages</h2>
-<p>In some cases, it may be desirable to summarize vital rates across stage classes to obtain a single mean vital rate for the entire MPM. This can be done using the <code>vr_</code> group of functions.</p>
+<p>In some cases, it may be desirable to summarize vital rates across
+stage classes to obtain a single mean vital rate for the entire MPM.
+This can be done using the <code>vr_</code> group of functions.</p>
 <div id="simple-average-across-stage-classes" class="section level4">
 <h4>Simple average across stage classes</h4>
-<p>By default, the <code>vr_</code> functions take a simple average of the stage-specific vital rates returned by the corresponding <code>vr_vec_</code> function. Here’s an example with growth.</p>
+<p>By default, the <code>vr_</code> functions take a simple average of
+the stage-specific vital rates returned by the corresponding
+<code>vr_vec_</code> function. Here’s an example with growth.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_growth</span>(matU, <span class="at">exclude_row =</span> <span class="dv">4</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.325</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -266,11 +531,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.20 0.45   NA   NA</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(vec_growth, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.325</span></span></code></pre></div>
-<p>Note that the two stage classes from which there are no growth transitions do not contribute to the MPM-average vital rate of growth. In practice, this is because the <code>vr_vec_</code> functions return NAs rather than 0s for stages that do not exhibit the relevant transition type. This is an important issue that we’ll return to in a later section.</p>
+<p>Note that the two stage classes from which there are no growth
+transitions do not contribute to the MPM-average vital rate of growth.
+In practice, this is because the <code>vr_vec_</code> functions return
+NAs rather than 0s for stages that do not exhibit the relevant
+transition type. This is an important issue that we’ll return to in a
+later section.</p>
 </div>
 <div id="weighted-average-across-stage-classes" class="section level4">
 <h4>Weighted average across stage classes</h4>
-<p>Rather than taking a simple average of the given vital rate across stage classes, we may wish to take a <em>weighted</em> average across stage classes. For instance, we may wish to weight stage classes based on the stable distribution at equilibrium. Here’s an example of how to do that using the <code>weights_col</code> argument.</p>
+<p>Rather than taking a simple average of the given vital rate across
+stage classes, we may wish to take a <em>weighted</em> average across
+stage classes. For instance, we may wish to weight stage classes based
+on the stable distribution at equilibrium. Here’s an example of how to
+do that using the <code>weights_col</code> argument.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the stable distribution using popdemo::eigs</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(popdemo)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>matA <span class="ot">&lt;-</span> matU <span class="sc">+</span> matF</span>
@@ -288,14 +562,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="distinguishing-between-possible-and-impossible-transitions" class="section level2">
 <h2>Distinguishing between possible and impossible transitions</h2>
-<p>By default, all <code>vr_</code> functions assume that a transition rate of 0 indicates an impossible transition within the given life cycle (e.g. tadpoles never revert to eggs), in which case a value of <code>NA</code> will be used in any relevant calculations. However, a transition rate of 0 could alternatively indicate a transition that is generally possible, but was simply estimated to be 0 in the relevant population and time period.</p>
-<p>This distinction between possible and impossible transitions can be important when calculating vital rates — particularly if we want to summarize vital rates across stages (i.e. summarize at the level of the MPM).</p>
-<p>Let’s consider the same <code>matU</code> we defined above, but imagine that it reflects a life cycle with a different set of stages: ‘seed’, ‘small’, ‘medium’, and ‘large’. Now our MPM has a single shrinkage transition (large to medium). If we summarize the vital rate of shrinkage across stages using <code>vr_shrinkage()</code>, we’ll simply recover the single shrinkage vital rate from the large to medium transition (i.e. because the other stages, with no shrinkage, do not contribute to the average).</p>
+<p>By default, all <code>vr_</code> functions assume that a transition
+rate of 0 indicates an impossible transition within the given life cycle
+(e.g. tadpoles never revert to eggs), in which case a value of
+<code>NA</code> will be used in any relevant calculations. However, a
+transition rate of 0 could alternatively indicate a transition that is
+generally possible, but was simply estimated to be 0 in the relevant
+population and time period.</p>
+<p>This distinction between possible and impossible transitions can be
+important when calculating vital rates — particularly if we want to
+summarize vital rates across stages (i.e. summarize at the level of the
+MPM).</p>
+<p>Let’s consider the same <code>matU</code> we defined above, but
+imagine that it reflects a life cycle with a different set of stages:
+‘seed’, ‘small’, ‘medium’, and ‘large’. Now our MPM has a single
+shrinkage transition (large to medium). If we summarize the vital rate
+of shrinkage across stages using <code>vr_shrinkage()</code>, we’ll
+simply recover the single shrinkage vital rate from the large to medium
+transition (i.e. because the other stages, with no shrinkage, do not
+contribute to the average).</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_shrinkage</span>(matU)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  NA  NA  NA 0.5</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_shrinkage</span>(matU)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.5</span></span></code></pre></div>
-<p>However, imagine now that the medium to small transition, which is 0 within <code>matU</code>, is in fact a possible shrinkage transition in our life cycle of interest — its rate was simply estimated to be 0 in the relevant sample and time period. In this case, we’ll need to manually specify the matrix of possible transitions using the <code>posU</code> argument.</p>
+<p>However, imagine now that the medium to small transition, which is 0
+within <code>matU</code>, is in fact a possible shrinkage transition in
+our life cycle of interest — its rate was simply estimated to be 0 in
+the relevant sample and time period. In this case, we’ll need to
+manually specify the matrix of possible transitions using the
+<code>posU</code> argument.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(pos <span class="ot">&lt;-</span> matU <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="co"># possible transitions based on matU</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       [,1]  [,2]  [,3]  [,4]</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  TRUE FALSE FALSE FALSE</span></span>
@@ -308,11 +603,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  NA  NA 0.0 0.5</span></span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_shrinkage</span>(matU, <span class="at">posU =</span> pos)</span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.25</span></span></code></pre></div>
-<p>Now, instead of returning <code>NA</code> for the vital rate of shrinkage from the medium stage class, <code>vr_vec_shrinkage()</code> returns a value of 0. Correspondingly, <code>vr_shrinkage()</code> incorporates this 0 into its calculation and returns an MPM-average shrinkage rate of 0.25 (<code>mean(c(0, 0.5)</code>) rather than 0.5, as before.</p>
+<p>Now, instead of returning <code>NA</code> for the vital rate of
+shrinkage from the medium stage class, <code>vr_vec_shrinkage()</code>
+returns a value of 0. Correspondingly, <code>vr_shrinkage()</code>
+incorporates this 0 into its calculation and returns an MPM-average
+shrinkage rate of 0.25 (<code>mean(c(0, 0.5)</code>) rather than 0.5, as
+before.</p>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>Caswell, H. (2001). Matrix Population Models: Construction, Analysis, and Interpretation. 2nd edition. Sinauer Associates, Sunderland, MA. ISBN-10: 0878930965</p>
+<p>Caswell, H. (2001). Matrix Population Models: Construction, Analysis,
+and Interpretation. 2nd edition. Sinauer Associates, Sunderland, MA.
+ISBN-10: 0878930965</p>
 </div>
 
 

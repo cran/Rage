@@ -12,27 +12,220 @@
 
 <meta name="author" content="Owen Jones" />
 
-<meta name="date" content="2021-10-15" />
+<meta name="date" content="2023-01-17" />
 
 <title>Suggested quality control</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -46,84 +239,225 @@
 
 <h1 class="title toc-ignore">Suggested quality control</h1>
 <h4 class="author">Owen Jones</h4>
-<h4 class="date">2021-10-15</h4>
+<h4 class="date">2023-01-17</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#types-of-issue">Types of issue</a>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#types-of-issue" id="toc-types-of-issue">Types of issue</a>
 <ul>
-<li><a href="#missing-data">Missing data</a></li>
-<li><a href="#excessive-zeros">Excessive zeros</a></li>
-<li><a href="#excessive-survival">Excessive survival</a></li>
-<li><a href="#excessive-mortality">Excessive mortality</a></li>
-<li><a href="#irreducibility-and-ergodicity">Irreducibility and ergodicity</a></li>
-<li><a href="#singularity-of-the-u-matrix">Singularity of the U matrix</a></li>
-<li><a href="#matrix-split-errors">Matrix split errors</a></li>
+<li><a href="#missing-data" id="toc-missing-data">Missing data</a></li>
+<li><a href="#excessive-zeros" id="toc-excessive-zeros">Excessive
+zeros</a></li>
+<li><a href="#excessive-survival" id="toc-excessive-survival">Excessive
+survival</a></li>
+<li><a href="#excessive-mortality" id="toc-excessive-mortality">Excessive mortality</a></li>
+<li><a href="#irreducibility-and-ergodicity" id="toc-irreducibility-and-ergodicity">Irreducibility and
+ergodicity</a></li>
+<li><a href="#singularity-of-the-u-matrix" id="toc-singularity-of-the-u-matrix">Singularity of the U
+matrix</a></li>
+<li><a href="#matrix-split-errors" id="toc-matrix-split-errors">Matrix
+split errors</a></li>
 </ul></li>
-<li><a href="#function-requirement-summaries">Function requirement summaries</a></li>
-<li><a href="#other-issues">Other issues</a></li>
-<li><a href="#finally">Finally…</a></li>
-<li><a href="#references">References</a></li>
+<li><a href="#function-requirement-summaries" id="toc-function-requirement-summaries">Function requirement
+summaries</a></li>
+<li><a href="#other-issues" id="toc-other-issues">Other issues</a></li>
+<li><a href="#finally" id="toc-finally">Finally…</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>The specific requirements and assumptions for each function in <code>Rage</code> varies. Here we provide notes giving an overview of these requirements, which are also applicable to other functions/calculations in packages such as <code>popbio</code> and <code>popdemo</code>. We make some suggestions of how users should filter their dataset before analysis. To assist with this, the function <code>Rcompadre::cdb_flag</code> conducts a series of checks on the matrices in a <code>compadreDB</code> object and adds “flags” to facilitate the filtering out of problematic matrices. This function (<code>cdb_flag</code>) can automatically be run by <code>Rcompadre::cdb_fetch</code> using the argument <code>flag = TRUE</code>.</p>
+<p>The specific requirements and assumptions for each function in
+<code>Rage</code> varies. Here we provide notes giving an overview of
+these requirements, which are also applicable to other
+functions/calculations in packages such as <code>popbio</code> and
+<code>popdemo</code>. We make some suggestions of how users should
+filter their dataset before analysis. To assist with this, the function
+<code>Rcompadre::cdb_flag</code> conducts a series of checks on the
+matrices in a <code>compadreDB</code> object and adds “flags” to
+facilitate the filtering out of problematic matrices. This function
+(<code>cdb_flag</code>) can automatically be run by
+<code>Rcompadre::cdb_fetch</code> using the argument
+<code>flag = TRUE</code>.</p>
 </div>
 <div id="types-of-issue" class="section level1">
 <h1>Types of issue</h1>
 <div id="missing-data" class="section level2">
 <h2>Missing data</h2>
-<p>The most obvious requirement for most of the <code>Rage</code> methods is that missing (<code>NA</code>) values in matrices prevent calculations using those matrices. Sometimes these <code>NA</code> values are in one of the submatrices (i.e., <strong>U</strong>, <strong>F</strong> or <strong>C</strong>) of the matrix model, but other submatrices are complete. For example, there may be <code>NA</code> entries in the <strong>F</strong> submatrix, while the <strong>U</strong> matrix remains complete. These issues are flagged with the columns <code>check_NA_A</code>, <code>check_NA_U</code>, <code>check_NA_F</code> and <code>check_NA_C</code>.</p>
+<p>The most obvious requirement for most of the <code>Rage</code>
+methods is that missing (<code>NA</code>) values in matrices prevent
+calculations using those matrices. Sometimes these <code>NA</code>
+values are in one of the submatrices (i.e., <strong>U</strong>,
+<strong>F</strong> or <strong>C</strong>) of the matrix model, but other
+submatrices are complete. For example, there may be <code>NA</code>
+entries in the <strong>F</strong> submatrix, while the
+<strong>U</strong> matrix remains complete. These issues are flagged
+with the columns <code>check_NA_A</code>, <code>check_NA_U</code>,
+<code>check_NA_F</code> and <code>check_NA_C</code>.</p>
 </div>
 <div id="excessive-zeros" class="section level2">
 <h2>Excessive zeros</h2>
-<p>Submatrices composed entirely of zero values can also be problematic. There may be good biological reasons for this phenomenon. Species that do not reproduce clonally will have zero-value <strong>C</strong> matrices. Another biologically reasonable explanation could be that in the particular focal population in the particular focal year, there was no sexual reproduction recorded, so the <strong>F</strong> matrix was composed entirely of zeros. Nevertheless, zero-value submatrices can cause some calculations to fail and it may be necessary to exclude them. These issues are flagged with the columns <code>check_zero_F</code>, <code>check_zero_C</code>, <code>check_zero_U</code>.</p>
+<p>Submatrices composed entirely of zero values can also be problematic.
+There may be good biological reasons for this phenomenon. Species that
+do not reproduce clonally will have zero-value <strong>C</strong>
+matrices. Another biologically reasonable explanation could be that in
+the particular focal population in the particular focal year, there was
+no sexual reproduction recorded, so the <strong>F</strong> matrix was
+composed entirely of zeros. Nevertheless, zero-value submatrices can
+cause some calculations to fail and it may be necessary to exclude them.
+These issues are flagged with the columns <code>check_zero_F</code>,
+<code>check_zero_C</code>, <code>check_zero_U</code>.</p>
 </div>
 <div id="excessive-survival" class="section level2">
 <h2>Excessive survival</h2>
-<p>In a biologically reasonable matrix population model, the set of survival and growth transitions (i.e., in the <strong>U</strong> matrix) from a particular stage cannot exceed 1. However, in some cases, errors in the original matrices (including data entry and rounding errors) cause this situation to occur and may persist in the data set. We can check for this error using column sums of the <strong>U</strong> matrix, and may wish to exclude matrices with any column sum greater than 1.<br />
-This issue is examined using the column <code>SurvivalIssue</code> which gives the maximum value of the column sums for <code>matU</code> . An additional column <code>check_surv_gte_1</code> (produced with <code>cdb_flag</code>) reports whether any <strong>single</strong> value is greater than or equal to 1.</p>
+<p>In a biologically reasonable matrix population model, the set of
+survival and growth transitions (i.e., in the <strong>U</strong> matrix)
+from a particular stage cannot exceed 1. However, in some cases, errors
+in the original matrices (including data entry and rounding errors)
+cause this situation to occur and may persist in the data set. We can
+check for this error using column sums of the <strong>U</strong> matrix,
+and may wish to exclude matrices with any column sum greater than
+1.<br />
+This issue is examined using the column <code>SurvivalIssue</code> which
+gives the maximum value of the column sums for <code>matU</code> . An
+additional column <code>check_surv_gte_1</code> (produced with
+<code>cdb_flag</code>) reports whether any <strong>single</strong> value
+is greater than or equal to 1.</p>
 </div>
 <div id="excessive-mortality" class="section level2">
 <h2>Excessive mortality</h2>
-<p>At the opposite end of the survival spectrum, there may be some matrices where some of the column sums of the <strong>U</strong> matrix are zero, implying that there is no survival from that particular stage. This may be a perfectly valid parameterisation for a particular year/place but is biologically unreasonable in the longer term and users may wish to exclude problematic matrices from their analysis. This issue is indicated by the column <code>check_zero_U_colsum</code>.</p>
+<p>At the opposite end of the survival spectrum, there may be some
+matrices where some of the column sums of the <strong>U</strong> matrix
+are zero, implying that there is no survival from that particular stage.
+This may be a perfectly valid parameterisation for a particular
+year/place but is biologically unreasonable in the longer term and users
+may wish to exclude problematic matrices from their analysis. This issue
+is indicated by the column <code>check_zero_U_colsum</code>.</p>
 </div>
 <div id="irreducibility-and-ergodicity" class="section level2">
 <h2>Irreducibility and ergodicity</h2>
-<p>Several matrix manipulations or calculations require that the MPM (<code>matA</code>) be irreducible and ergodic (Stott et al. 2018). Irreducible MPMs are those where parameterised transition rates facilitate pathways from all stages to all other stages. Conversely, reducible MPMs depict incomplete life cycles where pathways from all stages to every other stage are not possible. Ergodic MPMs are those where there is a <em>single</em> asymptotic stable state that does not depend on initial stage structure. Conversely, non-ergodic MPMs are those where there are multiple asymptotic stable states, which depend on initial stage structure. MPMs that are reducible and/or non-ergodic are usually biologically unreasonable, both in terms of their life cycle description and their projected dynamics. They cause some calculations in <code>Rage</code> (and elsewhere) to fail. Irreducibility is necessary but not sufficient for ergodicity. These issues are flagged with <code>check_irreducible</code> and <code>check_ergodic</code>. Even if <code>Rage</code> functions do not fail due to these issues, the fact that they can indicate biologically unreasonable life cycles may mean that users nevertheless wish to exclude reducible, non-ergodic matrices from their analyses.</p>
+<p>Several matrix manipulations or calculations require that the MPM
+(<code>matA</code>) be irreducible and ergodic (Stott et al. 2018).
+Irreducible MPMs are those where parameterised transition rates
+facilitate pathways from all stages to all other stages. Conversely,
+reducible MPMs depict incomplete life cycles where pathways from all
+stages to every other stage are not possible. Ergodic MPMs are those
+where there is a <em>single</em> asymptotic stable state that does not
+depend on initial stage structure. Conversely, non-ergodic MPMs are
+those where there are multiple asymptotic stable states, which depend on
+initial stage structure. MPMs that are reducible and/or non-ergodic are
+usually biologically unreasonable, both in terms of their life cycle
+description and their projected dynamics. They cause some calculations
+in <code>Rage</code> (and elsewhere) to fail. Irreducibility is
+necessary but not sufficient for ergodicity. These issues are flagged
+with <code>check_irreducible</code> and <code>check_ergodic</code>. Even
+if <code>Rage</code> functions do not fail due to these issues, the fact
+that they can indicate biologically unreasonable life cycles may mean
+that users nevertheless wish to exclude reducible, non-ergodic matrices
+from their analyses.</p>
 </div>
 <div id="singularity-of-the-u-matrix" class="section level2">
 <h2>Singularity of the U matrix</h2>
-<p>Matrices are said to be singular if they cannot be inverted. Inversion is required for many matrix calculations and, therefore, singularity can cause some calculations to fail. This issue is flagged with <code>check_singular_U</code>. Calculations for <code>longevity</code>, <code>life_expect_mean</code>, <code>life_expect_var</code> and <code>net_repro_rate</code> fail with singular matrices, so users may wish to exclude singular matrices when conducting analyses using these functions.</p>
+<p>Matrices are said to be singular if they cannot be inverted.
+Inversion is required for many matrix calculations and, therefore,
+singularity can cause some calculations to fail. This issue is flagged
+with <code>check_singular_U</code>. Calculations for
+<code>longevity</code>, <code>life_expect_mean</code>,
+<code>life_expect_var</code> and <code>net_repro_rate</code> fail with
+singular matrices, so users may wish to exclude singular matrices when
+conducting analyses using these functions.</p>
 </div>
 <div id="matrix-split-errors" class="section level2">
 <h2>Matrix split errors</h2>
-<p>A complete MPM (<strong>A</strong>) can be split into its component submatrices (i.e. <strong>U</strong>, <strong>F</strong> and <strong>C</strong>). The sum of these submatrices should equal the complete MPM (i.e. <strong>A</strong> = <strong>U</strong> + <strong>F</strong> + <strong>C</strong>). Sometimes, however, errors occur so that the submatrices do NOT sum to <strong>A</strong>. Normally, this is caused by rounding errors, but more significant errors are possible. This problem is flagged with <code>check_component_sum</code> (only relevant for divided (split) matrices). We recommend that users carefully check their matrices for these errors and correct or exclude them as appropriate.</p>
+<p>A complete MPM (<strong>A</strong>) can be split into its component
+submatrices (i.e. <strong>U</strong>, <strong>F</strong> and
+<strong>C</strong>). The sum of these submatrices should equal the
+complete MPM (i.e. <strong>A</strong> = <strong>U</strong> +
+<strong>F</strong> + <strong>C</strong>). Sometimes, however, errors
+occur so that the submatrices do NOT sum to <strong>A</strong>.
+Normally, this is caused by rounding errors, but more significant errors
+are possible. This problem is flagged with
+<code>check_component_sum</code> (only relevant for divided (split)
+matrices). We recommend that users carefully check their matrices for
+these errors and correct or exclude them as appropriate.</p>
 </div>
 </div>
 <div id="function-requirement-summaries" class="section level1">
 <h1>Function requirement summaries</h1>
-<p>It is a general requirement for almost all <code>Rage</code> functions that the matrices used as arguments do not include <code>NA</code> values. With divided (split) matrices, <code>NA</code> values may be present in some submatrices but not others. For example, the <strong>U</strong> matrix may be complete, but the <strong>F</strong> matrix may have <code>NA</code> values. In this case, functions that require an <strong>F</strong> matrix will fail, while those that only require a <strong>U</strong> matrix will work. Users should filter the data to exclude entries with <code>NA</code> values in the matrices required for their analysis. The functions <code>mpm_split</code>, <code>mpm_rearrange</code> and <code>mpm_standardise</code> do not require complete <code>NA</code>-free matrices.</p>
-<p>For functions that use the <strong>U</strong> matrix, we further suggest filtering the data to exclude the biologically unreasonable entries where one or more of the <code>matU</code> columns sum to zero, or to greater than 1 (see <em>Excessive Survival</em>, above). Alternatively, users could examine the offending matrices and make sensible corrections (e.g. to correct rounding errors).</p>
-<p>For functions that use the <strong>F</strong> matrix, and where sexual reproduction is known to occur in the species, we suggest that users consider filtering the data to exclude entries where <strong>F</strong> is entirely zero. This is not always desirable because there are some situations where zero recorded reproduction is biologically reasonable. We suggest a similar approach for the <strong>C</strong> matrix.</p>
+<p>It is a general requirement for almost all <code>Rage</code>
+functions that the matrices used as arguments do not include
+<code>NA</code> values. With divided (split) matrices, <code>NA</code>
+values may be present in some submatrices but not others. For example,
+the <strong>U</strong> matrix may be complete, but the
+<strong>F</strong> matrix may have <code>NA</code> values. In this case,
+functions that require an <strong>F</strong> matrix will fail, while
+those that only require a <strong>U</strong> matrix will work. Users
+should filter the data to exclude entries with <code>NA</code> values in
+the matrices required for their analysis. The functions
+<code>mpm_split</code>, <code>mpm_rearrange</code> and
+<code>mpm_standardise</code> do not require complete
+<code>NA</code>-free matrices.</p>
+<p>For functions that use the <strong>U</strong> matrix, we further
+suggest filtering the data to exclude the biologically unreasonable
+entries where one or more of the <code>matU</code> columns sum to zero,
+or to greater than 1 (see <em>Excessive Survival</em>, above).
+Alternatively, users could examine the offending matrices and make
+sensible corrections (e.g. to correct rounding errors).</p>
+<p>For functions that use the <strong>F</strong> matrix, and where
+sexual reproduction is known to occur in the species, we suggest that
+users consider filtering the data to exclude entries where
+<strong>F</strong> is entirely zero. This is not always desirable
+because there are some situations where zero recorded reproduction is
+biologically reasonable. We suggest a similar approach for the
+<strong>C</strong> matrix.</p>
 </div>
 <div id="other-issues" class="section level1">
 <h1>Other issues</h1>
-<p>When using age-from-stage methods, users should be aware of the issue of convergence to quasi-stationary distribution (see ). Briefly, All age-from-stage calculations produce age-trajectories that inevitably asymptote as a mathematical consequence of describing the vital rates as functions of discrete stages (Horvitz &amp; Tuljapurkar, 2008). This mathematical artefact can introduce bias into measures obtained using age-from-stage methods. <code>Rage</code> provides a convenient and principled way of correcting for this artefact by imposing a lower probability threshold defined by the degree of convergence to the quasi-stationary distribution (see ). We suggest that users filter out from their analyses matrices that do not pass this threshold criterion.</p>
-<p>Users should also be aware of the issue of census type. For populations that reproduce in a pulse once per year. The demographic census may be carried out before or after the reproduction event. There are thus two types of census: Pre- and post-reproductive census. This distinction has potentially important implications for demographic measures because of its effects on measured population structure. For example, the fraction of individuals in the first age class will tend to be larger larger in a post-reproductive census than a pre-reproductive census. There is a column in the com(p)adre metadata (<code>CensusType</code>) that is intended to record this information but, because authors of source publications have rarely clearly stated this information, it is very incomplete. For serious analyses we therefore recommend that users carefully collect this information themselves from the source papers.</p>
+<p>When using age-from-stage methods, users should be aware of the issue
+of convergence to quasi-stationary distribution (see ). Briefly, All
+age-from-stage calculations produce age-trajectories that inevitably
+asymptote as a mathematical consequence of describing the vital rates as
+functions of discrete stages (Horvitz &amp; Tuljapurkar, 2008). This
+mathematical artefact can introduce bias into measures obtained using
+age-from-stage methods. <code>Rage</code> provides a convenient and
+principled way of correcting for this artefact by imposing a lower
+probability threshold defined by the degree of convergence to the
+quasi-stationary distribution (see ). We suggest that users filter out
+from their analyses matrices that do not pass this threshold
+criterion.</p>
+<p>Users should also be aware of the issue of census type. For
+populations that reproduce in a pulse once per year. The demographic
+census may be carried out before or after the reproduction event. There
+are thus two types of census: Pre- and post-reproductive census. This
+distinction has potentially important implications for demographic
+measures because of its effects on measured population structure. For
+example, the fraction of individuals in the first age class will tend to
+be larger larger in a post-reproductive census than a pre-reproductive
+census. There is a column in the com(p)adre metadata
+(<code>CensusType</code>) that is intended to record this information
+but, because authors of source publications have rarely clearly stated
+this information, it is very incomplete. For serious analyses we
+therefore recommend that users carefully collect this information
+themselves from the source papers.</p>
 </div>
 <div id="finally" class="section level1">
 <h1>Finally…</h1>
-<p>Although we highlight here a range of issues that could cause problems for MPM analyses we have likely inadvertently omitted some issues. We therefore urge users to carefully consider issues that may pertain to their particular analyses.</p>
+<p>Although we highlight here a range of issues that could cause
+problems for MPM analyses we have likely inadvertently omitted some
+issues. We therefore urge users to carefully consider issues that may
+pertain to their particular analyses.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>Horvitz, C. C., &amp; Tuljapurkar, S. (2008). Stage dynamics, period survival, and mortality plateaus. The American Naturalist, 172(2), 203–215.</p>
-<p>Stott, I., Townley, S., &amp; Carslake, D. (2010). On reducibility and ergodicity of population projection matrix models. Methods in Ecology and Evolution. 1 (3), 242-252</p>
+<p>Horvitz, C. C., &amp; Tuljapurkar, S. (2008). Stage dynamics, period
+survival, and mortality plateaus. The American Naturalist, 172(2),
+203–215.</p>
+<p>Stott, I., Townley, S., &amp; Carslake, D. (2010). On reducibility
+and ergodicity of population projection matrix models. Methods in
+Ecology and Evolution. 1 (3), 242-252</p>
 </div>
 
 
