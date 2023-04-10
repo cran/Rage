@@ -68,7 +68,6 @@ MatrixClassOrganized(comp_collapse)
 comp_collapse$start_life <- mpm_first_active(comp_collapse)
 
 ## ---- fig.width = 6, fig.height = 4-------------------------------------------
-
 lx_list <- lapply(seq_len(nrow(comp_collapse)),
   function(x, comp_collapse) {
     U <- matU(comp_collapse$mat[[x]])

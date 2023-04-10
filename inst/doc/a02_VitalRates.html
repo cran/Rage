@@ -12,7 +12,7 @@
 
 <meta name="author" content="Patrick Barks" />
 
-<meta name="date" content="2023-01-17" />
+<meta name="date" content="2023-04-10" />
 
 <title>Deriving vital rates from an MPM</title>
 
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -333,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Deriving vital rates from an MPM</h1>
 <h4 class="author">Patrick Barks</h4>
-<h4 class="date">2023-01-17</h4>
+<h4 class="date">2023-04-10</h4>
 
 
 
@@ -362,39 +369,43 @@ rates. Our MPM will be separated into a growth/survival component
 (<code>matF</code>), and consist of 4 stage classes: ‘seed’, ‘small’,
 ‘large’, and ‘dormant’. First we’ll specify the vital rates.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## survival probabilities</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fl">0.20</span>  <span class="co"># seed</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fl">0.40</span>  <span class="co"># small</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>s3 <span class="ot">&lt;-</span> <span class="fl">0.50</span>  <span class="co"># large</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>s4 <span class="ot">&lt;-</span> <span class="fl">0.30</span>  <span class="co"># dormant</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fl">0.20</span> <span class="co"># seed</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fl">0.40</span> <span class="co"># small</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>s3 <span class="ot">&lt;-</span> <span class="fl">0.50</span> <span class="co"># large</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>s4 <span class="ot">&lt;-</span> <span class="fl">0.30</span> <span class="co"># dormant</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="do">## matU vital rates conditional on survival (growth, shrinkage, stasis, etc.)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>g12 <span class="ot">&lt;-</span> <span class="fl">0.15</span>           <span class="co"># seed to small      (growth)</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>g13 <span class="ot">&lt;-</span> <span class="fl">0.05</span>           <span class="co"># seed to large      (growth)</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>g11 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g12 <span class="sc">-</span> g13  <span class="co"># seed to seed       (stasis)</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>g23 <span class="ot">&lt;-</span> <span class="fl">0.45</span>           <span class="co"># small to large     (growth)</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>g24 <span class="ot">&lt;-</span> <span class="fl">0.10</span>           <span class="co"># small to dormant   (enter dormancy)</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>g22 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g23 <span class="sc">-</span> g24  <span class="co"># small to small     (stasis)</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>g34 <span class="ot">&lt;-</span> <span class="fl">0.22</span>           <span class="co"># large to dormant   (enter dormancy)</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g33 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g34        <span class="co"># large to large     (stasis)</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>g43 <span class="ot">&lt;-</span> <span class="fl">0.50</span>           <span class="co"># dormant to large   (exit dormancy)</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>g44 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g43        <span class="co"># dormant to dormant (stasis)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>g12 <span class="ot">&lt;-</span> <span class="fl">0.15</span> <span class="co"># seed to small      (growth)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>g13 <span class="ot">&lt;-</span> <span class="fl">0.05</span> <span class="co"># seed to large      (growth)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>g11 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g12 <span class="sc">-</span> g13 <span class="co"># seed to seed       (stasis)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>g23 <span class="ot">&lt;-</span> <span class="fl">0.45</span> <span class="co"># small to large     (growth)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>g24 <span class="ot">&lt;-</span> <span class="fl">0.10</span> <span class="co"># small to dormant   (enter dormancy)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>g22 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g23 <span class="sc">-</span> g24 <span class="co"># small to small     (stasis)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>g34 <span class="ot">&lt;-</span> <span class="fl">0.22</span> <span class="co"># large to dormant   (enter dormancy)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g33 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g34 <span class="co"># large to large     (stasis)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>g43 <span class="ot">&lt;-</span> <span class="fl">0.50</span> <span class="co"># dormant to large   (exit dormancy)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>g44 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g43 <span class="co"># dormant to dormant (stasis)</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="do">## matF vital rates conditional on survival (i.e. fecundity)</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fl">0.4</span>   <span class="co"># small</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fl">1.1</span>   <span class="co"># large</span></span></code></pre></div>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fl">0.4</span> <span class="co"># small</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fl">1.1</span> <span class="co"># large</span></span></code></pre></div>
 <p>Next we’ll use the vital rates to construct an MPM, based on a
 post-breeding census design.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># growth/survival component</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>matU <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(s1<span class="sc">*</span>g11,      <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(s1<span class="sc">*</span>g12, s2<span class="sc">*</span>g22,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(s1<span class="sc">*</span>g13, s2<span class="sc">*</span>g23, s3<span class="sc">*</span>g33, s4<span class="sc">*</span>g43),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(     <span class="dv">0</span>, s2<span class="sc">*</span>g24, s3<span class="sc">*</span>g34, s4<span class="sc">*</span>g44))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># sexual reproduction component</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>matF <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(     <span class="dv">0</span>,  s2<span class="sc">*</span>f2,  s3<span class="sc">*</span>f3,      <span class="dv">0</span>),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(     <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(     <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(     <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>,      <span class="dv">0</span>))</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>matU <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(s1 <span class="sc">*</span> g11, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(s1 <span class="sc">*</span> g12, s2 <span class="sc">*</span> g22, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(s1 <span class="sc">*</span> g13, s2 <span class="sc">*</span> g23, s3 <span class="sc">*</span> g33, s4 <span class="sc">*</span> g43),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, s2 <span class="sc">*</span> g24, s3 <span class="sc">*</span> g34, s4 <span class="sc">*</span> g44)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># sexual reproduction component</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>matF <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, s2 <span class="sc">*</span> f2, s3 <span class="sc">*</span> f3, <span class="dv">0</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="deriving-vital-rates-of-survival" class="section level2">
 <h2>Deriving vital rates of survival</h2>
@@ -555,7 +566,7 @@ do that using the <code>weights_col</code> argument.</p>
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2220831</span></span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># equivalent to</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(vec_growth)                   <span class="co"># possible transitions</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(vec_growth) <span class="co"># possible transitions</span></span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(vec_growth[pos] <span class="sc">*</span> w[pos]) <span class="sc">/</span> <span class="fu">sum</span>(w[pos]) <span class="co"># weighted average</span></span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2220831</span></span></code></pre></div>
 </div>
@@ -597,7 +608,7 @@ manually specify the matrix of possible transitions using the
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]  TRUE  TRUE FALSE FALSE</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  TRUE  TRUE  TRUE  TRUE</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] FALSE  TRUE  TRUE  TRUE</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>pos[<span class="dv">2</span>,<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">TRUE</span>  <span class="co"># set medium-to-small shrinkage tr to possible</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>pos[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co"># set medium-to-small shrinkage tr to possible</span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">vr_vec_shrinkage</span>(matU, <span class="at">posU =</span> pos)</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  NA  NA 0.0 0.5</span></span>
