@@ -10,11 +10,15 @@ data(mpm1) # load data object 'mpm1'
 mpm1 # display the contents
 
 ## -----------------------------------------------------------------------------
-life_expect_mean(matU = mpm1$matU, start = 1) # mean life expectancy from "seed" stage
-life_expect_var(matU = mpm1$matU, start = 1) # variance in life expectancy from "seed" stage
+# mean life expectancy from "seed" stage
+life_expect_mean(matU = mpm1$matU, start = 1)
+
+# variance in life expectancy from "seed" stage
+life_expect_var(matU = mpm1$matU, start = 1)
 
 ## -----------------------------------------------------------------------------
-life_expect_mean(matU = mpm1$matU, start = 2) # mean life expectancy from "small" stage
+# mean life expectancy from "small" stage
+life_expect_mean(matU = mpm1$matU, start = 2)
 
 ## -----------------------------------------------------------------------------
 life_expect_mean(matU = mpm1$matU, start = c(0, 0.4, 0.6, 0, 0))
@@ -23,14 +27,17 @@ life_expect_mean(matU = mpm1$matU, start = c(0, 0.4, 0.6, 0, 0))
 longevity(matU = mpm1$matU, start = 2, lx_crit = 0.05)
 
 ## -----------------------------------------------------------------------------
-longval <- c()
-startvec <- c(1:dim(mpm1$matU)[1]) # vector of starting stages
+longval <- NULL
+startvec <- seq_len(nrow(mpm1$matU)) # vector of starting stages
 
-for (i in c(startvec)) {
+for (i in startvec) {
   longval[i] <- longevity(matU = mpm1$matU, start = startvec[i], lx_crit = 0.05)
 }
 
-plot(longval, type = "l", xlab = "Starting stage", ylab = "Longevity to 5% survivorship")
+plot(longval,
+  type = "l", xlab = "Starting stage",
+  ylab = "Longevity to 5% survivorship"
+)
 longval
 
 ## -----------------------------------------------------------------------------
@@ -48,12 +55,18 @@ mature_prob(matU = mpm1$matU, matR = mpm1$matF, start = 2)
 ## -----------------------------------------------------------------------------
 mpm1$matF # We see that the "medium" and "large" stages are reproductive
 
-maturedist <- mature_distrib(matU = mpm1$matU, start = 1L, repro_stages = c(FALSE, FALSE, TRUE, TRUE, FALSE))
+maturedist <- mature_distrib(
+  matU = mpm1$matU, start = 1L,
+  repro_stages = c(FALSE, FALSE, TRUE, TRUE, FALSE)
+)
 maturedist
 
 ## -----------------------------------------------------------------------------
-life_expect_mean(matU = mpm1$matU, start = c(maturedist)) # mean life expectancy from maturity
-life_expect_mean(matU = mpm1$matU, start = 2) # mean life expectancy from "small" stage
+# mean life expectancy from maturity
+life_expect_mean(matU = mpm1$matU, start = c(maturedist))
+
+# mean life expectancy from "small" stage
+life_expect_mean(matU = mpm1$matU, start = 2)
 
 ## -----------------------------------------------------------------------------
 lx <- mpm_to_lx(matU = mpm1$matU, start = "small")
@@ -64,7 +77,10 @@ mx <- mpm_to_mx(matU = mpm1$matU, matR = mpm1$matF, start = "small")
 ## -----------------------------------------------------------------------------
 lx_seed <- mpm_to_lx(matU = mpm1$matU, start = "seed")
 
-plot(lx, xlab = "Survival time (years)", ylab = "Survivorship", type = "s", col = "black")
+plot(lx,
+  xlab = "Survival time (years)", ylab = "Survivorship",
+  type = "s", col = "black"
+)
 lines(lx_seed, type = "s", col = "orange")
 legend("topright",
   inset = c(0.05, 0.05), c("From seed stage", "From small stage"),
@@ -76,6 +92,9 @@ entropy_d(lx, mx) # Demetrius' entropy
 entropy_k(lx) # Keyfitz' entropy
 
 ## -----------------------------------------------------------------------------
-shape_surv(lx) # shape of survival/mortality trajectory
-shape_rep(mx) # shape of fecundity trajectory
+# shape of survival/mortality trajectory
+shape_surv(lx)
+
+# shape of fecundity trajectory
+shape_rep(mx)
 

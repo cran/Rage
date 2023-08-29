@@ -37,7 +37,8 @@ plot(mx, type = "l", xlab = "Age")
 library(Rcompadre)
 data(Compadre)
 
-# In older versions of Com(p)adre the ProjectionInterval column was called AnnualPeriodicity.
+# In older versions of Com(p)adre the ProjectionInterval column was called
+# AnnualPeriodicity.
 if ("AnnualPeriodicity" %in% names(Compadre)) {
   Compadre$ProjectionInterval <- Compadre$AnnualPeriodicity
 }
@@ -49,7 +50,10 @@ comp_use <- subset(comp_flag, OrganismType == "Tree" &
   ProjectionInterval == 1)
 
 ## -----------------------------------------------------------------------------
-CompadreData(comp_use)[, c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
+CompadreData(comp_use)[, c(
+  "SpeciesAccepted", "MatrixPopulation",
+  "MatrixTreatment"
+)]
 
 ## -----------------------------------------------------------------------------
 # add column ID-ing matrices with same MatrixClassAuthor vector
@@ -59,7 +63,10 @@ comp_use$stage_id <- cdb_id_stages(comp_use)
 comp_collapse <- cdb_collapse(comp_use, "stage_id")
 
 # check species/populations again
-CompadreData(comp_collapse)[, c("SpeciesAccepted", "MatrixPopulation", "MatrixTreatment")]
+CompadreData(comp_collapse)[, c(
+  "SpeciesAccepted", "MatrixPopulation",
+  "MatrixTreatment"
+)]
 
 ## -----------------------------------------------------------------------------
 MatrixClassOrganized(comp_collapse)

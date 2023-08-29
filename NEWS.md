@@ -1,3 +1,12 @@
+# Rage 1.5.0
+
+* added `is_leslie_matrix` function to detect a Leslie matrix.
+* added `leslie_collapse` function to aggregate a Leslie matrix to a desired dimension. This function is similar to `mpm_collapse` but it will ensure that the returned aggregated matrix is also in the form of a Leslie matrix. Code contributed by Richard A. Hinrichsen.
+* Error in `life_expect_var` (#193) corrected (contribution from @chrissy3815). Note that `life_expect_mean` and `life_expect_var` now function slightly differently. Be aware!
+* performance enhancements to speed up code and make it more robust.
+* increased unit test coverage to >95%
+
+
 # Rage 1.4.0
 
 * `entropy_d` `entropy_k` `shape_rep` and `shape_surv` can now accept matrices directly. In previous versions, these functions required input of `lx` and/or `mx` trajectories, but now the functions can optionally use `mpm_to_...` functions to create these vectors internally (#174).

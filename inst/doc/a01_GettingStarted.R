@@ -62,7 +62,7 @@ ggdat$col[is.na(ggdat$col)] <- "transparent"
 ggdat$to <- factor(ggdat$to, levels = c("flowering", "rosette", "seedling"))
 ggdat$from <- factor(ggdat$from, levels = c("seedling", "rosette", "flowering"))
 ggplot(ggdat, aes(x = from, y = to, label = trans)) +
-  geom_tile(color = "black", fill = "white", size = 0.25, show.legend = FALSE) +
+  geom_tile(color = "black", fill = "white", linewidth = 0.25, show.legend = FALSE) +
   geom_text(size = 6) +
   scale_x_discrete(position = "top") +
   labs(x = "current life stage", y = "life stage at time t+1") +
@@ -72,7 +72,10 @@ ggplot(ggdat, aes(x = from, y = to, label = trans)) +
 
 ## ----echo=FALSE,fig.align='center',fig.height=4,fig.width=9,out.width='100%'----
 blankdat <- expand.grid(to = stages, from = stages, trans = 0)
-blankdat$to <- factor(blankdat$to, levels = c("flowering", "rosette", "seedling"))
+blankdat$to <- factor(blankdat$to, levels = c(
+  "flowering", "rosette",
+  "seedling"
+))
 blankdat$from <- factor(blankdat$from,
   levels = c("seedling", "rosette", "flowering")
 )
@@ -89,10 +92,10 @@ ggplot(
 ) +
   geom_tile(
     data = blankdat,
-    aes(fill = NULL), fill = "white", color = "black", size = 0.25
+    aes(fill = NULL), fill = "white", color = "black", linewidth = 0.25
   ) +
   geom_text(data = blankdat, aes(fill = NULL), size = 6) +
-  geom_tile(color = "black", size = 0.25, show.legend = FALSE) +
+  geom_tile(color = "black", linewidth = 0.25, show.legend = FALSE) +
   geom_text(size = 6) +
   scale_x_discrete(position = "top") +
   scale_fill_manual(values = c(
@@ -134,8 +137,8 @@ mpm1 # display the contents
 
 ## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
 tabl <- "
-| Function category                       | Stand-alone vignette                  |
-|-----------------------------------------|---------------------------------------|
+| Function category                       | Stand-alone vignette             |
+|-----------------------------------------|----------------------------------|
 | 1. [Vital rates](#vitalrates)  | [VitalRates](https://jonesor.github.io/Rage/articles/a02_VitalRates.html)     |
 | 2. [Life tables](#lifetable) | [AgeFromStage](https://jonesor.github.io/Rage/articles/a03_AgeFromStage.html) |
 | 3. [Perturbation analysis](#perturb)    | [TernaryPlots](https://jonesor.github.io/Rage/articles/a04_TernaryPlots.html) |
@@ -172,7 +175,10 @@ lx_to_hx(lx = lx) # survivorship to mortality hazard
 cohort <- popdemo::project(A = mpm1$matU, vector = c(0, 1, 0, 0, 0), time = 10)
 popStructure <- vec(cohort) / rowSums(vec(cohort))
 
-matplot(popStructure, type = "l", xlab = "time", ylab = "proportion in stage class")
+matplot(popStructure,
+  type = "l", xlab = "time",
+  ylab = "proportion in stage class"
+)
 
 ## -----------------------------------------------------------------------------
 # calculate time to QSD from the U matrix of an MPM
@@ -184,7 +190,10 @@ lt_preQSD <- lt[1:q, ]
 # plot mortality trajectory from the life table subset (blue),
 # showing plateau effect if the trajectory (grey) was allowed to continue to the
 # QSD (dashed vertical line) and beyond
-plot(qx ~ x, data = lt, type = "l", col = "darkgrey", ylim = c(0, 1), xlab = "age")
+plot(qx ~ x,
+  data = lt, type = "l", col = "darkgrey", ylim = c(0, 1),
+  xlab = "age"
+)
 lines(qx ~ x, data = lt_preQSD, type = "l", col = "blue", lwd = 4)
 abline(v = q, lty = "dashed")
 
@@ -232,11 +241,14 @@ col1 <- mpm_collapse(
 col1$matA
 
 ## -----------------------------------------------------------------------------
-(col1_auto <- name_stages(mat = col1, prefix = "class_")) # automated stage naming
+# automated stage naming
+(col1_auto <- name_stages(mat = col1, prefix = "class_"))
+
+# overwrite with custom stages
 (col1_cust <- name_stages(
   mat = col1, names = c("seed", "active", "dormant"),
   prefix = NULL
-)) # overwrite with custom stages
+))
 
 ## -----------------------------------------------------------------------------
 # compare population growth rate of original and collapsed MPM (preserved)

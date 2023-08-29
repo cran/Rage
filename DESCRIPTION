@@ -1,7 +1,7 @@
 Type: Package
 Package: Rage
 Title: Life History Metrics from Matrix Population Models
-Version: 1.4.0
+Version: 1.5.0
 Authors@R: c(
     person("Patrick", "Barks", , "barks@biology.sdu.dk", role = "aut",
            comment = c(ORCID = "0000-0002-5947-8151")),
@@ -12,6 +12,8 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-4394-6894")),
     person(c("Judy", "P."), "Che-Castaldo", , "jchecastaldo@lpzoo.org", role = "aut",
            comment = c(ORCID = "0000-0002-9118-9202")),
+    person(c("Richard", "A."), "Hinrichsen", , "rich@hinrichsenenvironmental.com", role = "aut",
+           comment = c(ORCID = "0000-0003-0761-3005")),
     person("John", "Jackson", , "jjackson0308@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-4563-2840")),
     person("Tamora", "James", , "tamoradjames@protonmail.com", role = "aut",
@@ -29,7 +31,9 @@ Authors@R: c(
     person("Iain", "Stott", , "stott@biology.sdu.dk", role = "aut",
            comment = c(ORCID = "0000-0003-2724-7436")),
     person(c("Chelsea", "C."), "Thomas", , "esochels@gmail.com", role = "aut",
-           comment = c(ORCID = "0000-0002-8155-9353"))
+           comment = c(ORCID = "0000-0002-8155-9353")),
+    person(c("Christina", "M."), "Hernández", , "cmh352@cornell.edu", role = "aut",
+           comment = c(ORCID = "0000-0002-7188-8217"))
   )
 Description: Functions for calculating life history metrics using matrix
     population models ('MPMs'). Described in Jones et al. (2021)
@@ -38,7 +42,7 @@ License: GPL-3
 URL: https://github.com/jonesor/Rage
 BugReports: https://github.com/jonesor/Rage/issues
 Depends: R (>= 3.5.0)
-Imports: DiagrammeR, MASS, popdemo, stats
+Imports: DiagrammeR, expm, MASS, popdemo, stats
 Suggests: ggplot2, knitr, Rcompadre, rmarkdown, spelling, testthat (>=
         3.0.0)
 VignetteBuilder: knitr
@@ -49,12 +53,13 @@ Language: en-GB
 LazyData: true
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-04-10 11:18:25 UTC; jones
+Packaged: 2023-08-29 19:37:57 UTC; jones
 Author: Patrick Barks [aut] (<https://orcid.org/0000-0002-5947-8151>),
   Danny Buss [ctb],
   Pol Capdevila [aut] (<https://orcid.org/0000-0002-2842-4302>),
   Hal Caswell [aut] (<https://orcid.org/0000-0003-4394-6894>),
   Judy P. Che-Castaldo [aut] (<https://orcid.org/0000-0002-9118-9202>),
+  Richard A. Hinrichsen [aut] (<https://orcid.org/0000-0003-0761-3005>),
   John Jackson [aut] (<https://orcid.org/0000-0002-4563-2840>),
   Tamora James [aut] (<https://orcid.org/0000-0003-1363-4742>),
   Owen Jones [aut, cre] (<https://orcid.org/0000-0001-5720-4686>),
@@ -63,7 +68,8 @@ Author: Patrick Barks [aut] (<https://orcid.org/0000-0002-5947-8151>),
   Roberto Salguero-Gomez [aut] (<https://orcid.org/0000-0002-6085-4433>),
   Caroline Schuette [ctb] (<https://orcid.org/0000-0002-2063-8736>),
   Iain Stott [aut] (<https://orcid.org/0000-0003-2724-7436>),
-  Chelsea C. Thomas [aut] (<https://orcid.org/0000-0002-8155-9353>)
+  Chelsea C. Thomas [aut] (<https://orcid.org/0000-0002-8155-9353>),
+  Christina M. Hernández [aut] (<https://orcid.org/0000-0002-7188-8217>)
 Maintainer: Owen Jones <jones@biology.sdu.dk>
 Repository: CRAN
-Date/Publication: 2023-04-10 23:20:02 UTC
+Date/Publication: 2023-08-29 19:50:02 UTC

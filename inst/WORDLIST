@@ -1,14 +1,9 @@
 ac
 ADRE
+adre
 AgeFromStage
 Altwegg
-Carslake
 AnnualPeriodicity
-adre
-qsd
-matU
-matR
-mpm
 Appveyor
 Ascencio
 Baudisch
@@ -18,6 +13,7 @@ bioRxiv
 Borgan
 Buhr
 Camarda
+Carslake
 Castaldo
 caswell
 ch
@@ -25,6 +21,7 @@ Clonality
 clonality
 clonally
 CMD
+cmh
 Coale
 codecov
 codemeta
@@ -34,6 +31,7 @@ com
 COMADRE
 COMPADRE
 Conde
+cornell
 Dahlgren
 DiagrammeR
 dk
@@ -65,6 +63,8 @@ Haridas
 Hartmann
 hcaswell
 Heuveline
+Hinrichsen
+hinrichsenenvironmental
 Hoppe
 Horvitz
 hx
@@ -82,13 +82,17 @@ LifeHistoryTraits
 life’
 MAM
 mathbf
+matR
 MatrixPeriodicity
+matU
 Mbeau
 medium’
 Menges
 Metcalf
+mixdist
 Modeling
 models'
+mpm
 MPM
 MPMs
 mx
@@ -97,6 +101,7 @@ ncsu
 nd
 Neel
 nl
+ORCID
 org
 parameterised
 patrick
@@ -106,6 +111,7 @@ Phyllanthus
 Plotkin
 ProjectionInterval
 px
+qsd
 QSD
 Quintana
 qx
@@ -116,6 +122,7 @@ reprdouction
 Roemer
 Runge
 Ruoff
+Römer
 Salguero
 salguero
 Schaible
@@ -129,6 +136,7 @@ small’
 something’
 Sommer
 st
+subdiagonal
 submatix
 survivial
 survivorships
