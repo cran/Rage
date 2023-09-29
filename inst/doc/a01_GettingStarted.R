@@ -135,15 +135,15 @@ library(Rage) # load Rage
 data(mpm1) # load data object 'mpm1'
 mpm1 # display the contents
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 | Function category                       | Stand-alone vignette             |
 |-----------------------------------------|----------------------------------|
-| 1. [Vital rates](#vitalrates)  | [VitalRates](https://jonesor.github.io/Rage/articles/a02_VitalRates.html)     |
-| 2. [Life tables](#lifetable) | [AgeFromStage](https://jonesor.github.io/Rage/articles/a03_AgeFromStage.html) |
-| 3. [Perturbation analysis](#perturb)    | [TernaryPlots](https://jonesor.github.io/Rage/articles/a04_TernaryPlots.html) |
-| 4. [Deriving life history traits](#lifehist) | [LifeHistoryTraits](https://jonesor.github.io/Rage/articles/a05_LifeHistoryTraits.html) |
-| 5. [Transformation of matrices](#maniptransform) | n/a                                   |
+| 1. [Vital rates](#vitalrates)  | [GettingStarted](https://jonesor.github.io/Rage/articles/a01_GettingStarted.html)     |
+| 2. [Life tables](#lifetable) | [VitalRates](https://jonesor.github.io/Rage/articles/a02_VitalRates.html)  |
+| 3. [Perturbation analysis](#perturb)    | [LifeHistoryTraits](https://jonesor.github.io/Rage/articles/a03_LifeHistoryTraits.html) |
+| 4. [Deriving life history traits](#lifehist) | [AgeFromStage](https://jonesor.github.io/Rage/articles/a04_AgeFromStage.html)  |
+| 5. [Transformation of matrices](#maniptransform) | [QualityControl](https://jonesor.github.io/Rage/articles/a05_SuggestedQualityControl.html) |
 "
 cat(tabl)
 
@@ -170,7 +170,7 @@ lx
 lx_to_px(lx = lx) # survivorship to survival probability
 lx_to_hx(lx = lx) # survivorship to mortality hazard
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', fig.height=5, fig.width=6----
+## ----warning=FALSE, message=FALSE, fig.align='center', fig.height=5, fig.width=6----
 # project a germinated cohort through the U matrix
 cohort <- popdemo::project(A = mpm1$matU, vector = c(0, 1, 0, 0, 0), time = 10)
 popStructure <- vec(cohort) / rowSums(vec(cohort))

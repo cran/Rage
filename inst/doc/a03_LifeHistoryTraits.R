@@ -21,7 +21,7 @@ life_expect_var(matU = mpm1$matU, start = 1)
 life_expect_mean(matU = mpm1$matU, start = 2)
 
 ## -----------------------------------------------------------------------------
-life_expect_mean(matU = mpm1$matU, start = c(0, 0.4, 0.6, 0, 0))
+life_expect_mean(matU = mpm1$matU, mixdist = c(0, 0.4, 0.6, 0, 0), start = NULL)
 
 ## -----------------------------------------------------------------------------
 longevity(matU = mpm1$matU, start = 2, lx_crit = 0.05)
@@ -63,7 +63,7 @@ maturedist
 
 ## -----------------------------------------------------------------------------
 # mean life expectancy from maturity
-life_expect_mean(matU = mpm1$matU, start = c(maturedist))
+life_expect_mean(matU = mpm1$matU, mixdist = maturedist, start = NULL)
 
 # mean life expectancy from "small" stage
 life_expect_mean(matU = mpm1$matU, start = 2)

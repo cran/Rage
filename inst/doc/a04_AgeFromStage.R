@@ -29,7 +29,7 @@ lx <- mpm_to_lx(mat_U, start = 1, xmax = 30)
 # calculate mx
 mx <- mpm_to_mx(mat_U, mat_F, start = 1, xmax = 30)
 
-## ---- fig.width = 6, fig.height = 4-------------------------------------------
+## ----fig.width = 6, fig.height = 4--------------------------------------------
 plot(lx, ylim = c(0, 1), type = "l", xlab = "Age")
 plot(mx, type = "l", xlab = "Age")
 
@@ -74,7 +74,7 @@ MatrixClassOrganized(comp_collapse)
 ## -----------------------------------------------------------------------------
 comp_collapse$start_life <- mpm_first_active(comp_collapse)
 
-## ---- fig.width = 6, fig.height = 4-------------------------------------------
+## ----fig.width = 6, fig.height = 4--------------------------------------------
 lx_list <- lapply(seq_len(nrow(comp_collapse)),
   function(x, comp_collapse) {
     U <- matU(comp_collapse$mat[[x]])
