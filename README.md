@@ -109,24 +109,18 @@ gen_time(mpm1$matU, mpm1$matF) # generation time
 #> [1] 5.394253
 ```
 
-Other life history traits are calculated from a life table rather than
-an MPM, in which case we can first use the `mpm_to_` group of functions
-to derive the necessary life table components.
+Some life history traits are calculated from a life table rather than an
+MPM. For example, traits like entropy (`entropy_k_stage`) and shape
+measures (`shape_surv`, `shape_rep`) etc. In these cases, the
+calculation of age trajectories (lx and or mx trajectories) is handled
+internally. Nevertheless, it can still be useful to obtain the
+trajectories directly, in which case we can first use the `mpm_to_`
+group of functions.
 
 ``` r
 # first derive age-trajectories of survivorship (lx) and fecundity (mx)
 lx <- mpm_to_lx(mpm1$matU, start = 2)
 mx <- mpm_to_mx(mpm1$matU, mpm1$matF, start = 2)
-
-# then calculate life history traits
-entropy_k(lx) # Keyfitz' entropy
-#> [1] 0.9077186
-entropy_d(lx, mx) # Demetrius' entropy
-#> [1] 2.062862
-shape_surv(lx) # shape of survival/mortality trajectory
-#> [1] -0.04681254
-shape_rep(lx) # shape of fecundity trajectory
-#> [1] 0.3097147
 ```
 
 ### Life tables and the quasi-stationary distribution
@@ -335,10 +329,10 @@ For a complete list of functions see the package
 Specific earlier releases of this package can be installed using the
 appropriate `@` tag.
 
-For example to install version 0.1.0:
+For example to install version 1.0.0:
 
 ``` r
-remotes::install_github("jonesor/Rage@v0.1.0")
+remotes::install_github("jonesor/Rage@v1.0.0")
 ```
 
 See the Changelog for more details.
@@ -350,8 +344,7 @@ K., Capdevila, P., Che-Castaldo, J., Jackson, J., Römer, G., Schuette,
 C., Thomas, C. C., & Salguero-Gómez, R. (2022). `Rcompadre` and
 `Rage`—Two R packages to facilitate the use of the COMPADRE and COMADRE
 databases and calculation of life-history traits from matrix population
-models. *Methods in Ecology and Evolution*, 13, 770–781. doi:
-[10.1111/2041-210X.13792](https://doi.org/10.1111/2041-210X.13792)
+models. *Methods in Ecology and Evolution*, 13, 770–781.
 
 ## Contributions
 

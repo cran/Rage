@@ -139,11 +139,11 @@ mpm1 # display the contents
 tabl <- "
 | Function category                       | Stand-alone vignette             |
 |-----------------------------------------|----------------------------------|
-| 1. [Vital rates](#vitalrates)  | [GettingStarted](https://jonesor.github.io/Rage/articles/a01_GettingStarted.html)     |
-| 2. [Life tables](#lifetable) | [VitalRates](https://jonesor.github.io/Rage/articles/a02_VitalRates.html)  |
-| 3. [Perturbation analysis](#perturb)    | [LifeHistoryTraits](https://jonesor.github.io/Rage/articles/a03_LifeHistoryTraits.html) |
-| 4. [Deriving life history traits](#lifehist) | [AgeFromStage](https://jonesor.github.io/Rage/articles/a04_AgeFromStage.html)  |
-| 5. [Transformation of matrices](#maniptransform) | [QualityControl](https://jonesor.github.io/Rage/articles/a05_SuggestedQualityControl.html) |
+| 1. [Vital rates](#vitalrates)  | [VitalRates](a02_VitalRates.html)     |
+| 2. [Life tables](#lifetable) | [AgeFromStage](a04_AgeFromStage.html) |
+| 3. [Perturbation analysis](#perturb)    | n/a |
+| 4. [Deriving life history traits](#lifehist) | [LifeHistoryTraits](a03_LifeHistoryTraits.html) |
+| 5. [Transformation of matrices](#maniptransform) | n/a                                   |
 "
 cat(tabl)
 
@@ -230,7 +230,6 @@ net_repro_rate(
 ## -----------------------------------------------------------------------------
 # derive post-germination survivorship trajectory from U matrix
 lx <- mpm_to_lx(matU = mpm1$matU, start = "small")
-entropy_k(lx = lx) # calculate Keyfitz' entropy
 
 ## -----------------------------------------------------------------------------
 # collapse 'small', 'medium', and 'large' stages into single stage class

@@ -44,7 +44,7 @@ An object of class \code{grViz} representing the life cycle diagram
 Plots the life cycle diagram illustrated by a matrix population model. This
 function processes the matrix model and passes the information to the
 graphViz function in DiagrammeR. See
-\url{http://rich-iannone.github.io/DiagrammeR/}.
+\url{https://rich-iannone.github.io/DiagrammeR/}.
 }
 \examples{
 matA <- rbind(
@@ -56,6 +56,17 @@ matA <- rbind(
 )
 
 plot_life_cycle(matA)
+
+# One could save the diagram as a PNG file using a combination of `export_svg`
+# (from the `DiagrammeRsvg` package) and `rsvg_png` (from the `rsvg` package)
+# like this:
+\dontrun{
+p1 <- plot_life_cycle(matA)
+p1 \%>\%
+  DiagrammeRsvg::export_svg \%>\%
+  charToRaw() \%>\%
+  rsvg::rsvg_png("my life cycle.png")
+}
 
 # Change the order of the nodes and give them names
 plot_life_cycle(matA,

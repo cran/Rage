@@ -200,3 +200,39 @@ stable.stage <- function(x) {
 reproductive.value <- function(x) {
   return(popdemo::eigs(x, what = "rv"))
 }
+
+
+#' @noRd
+process_fertility_inputs <- function(matR = NULL, matF = NULL, matC = NULL) {
+  # If matR is provided, return it as is
+  if (!is.null(matR)) {
+    return(matR)
+  }
+  
+  # If matR is NULL, process matF and matC
+  if (!is.null(matF) && is.null(matC)) {
+    # If matF is provided but matC is NULL, assume matC is a zero matrix
+    matC <- matrix(0, nrow = nrow(matF), ncol = ncol(matF))
+  } else if (is.null(matF) && !is.null(matC)) {
+    # If matC is provided but matF is NULL, assume matF is a zero matrix
+    matF <- matrix(0, nrow = nrow(matC), ncol = ncol(matC))
+  } else if (is.null(matF) && is.null(matC)) {
+    # If both matF and matC are NULL, return NULL
+    return(NULL)
+  }
+  
+  # Combine matF and matC to create matR
+  matR <- matF + matC
+  
+  # Return the constructed matR
+  return(matR)
+}
+
+#' @noRd
+get.leslie <- function(lx, mx) {
+  nage <- length(lx)
+  A <- matrix(0, nrow = nage, ncol = nage)
+  A[1, ] = lx * mx
+  A[2:nage, 1:(nage - 1)] = diag(1, nage - 1)
+  return(A)
+}

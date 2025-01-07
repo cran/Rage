@@ -4,7 +4,14 @@
 \alias{gen_time}
 \title{Calculate generation time from a matrix population model}
 \usage{
-gen_time(matU, matR, method = c("R0", "age_diff", "cohort"), ...)
+gen_time(
+  matU,
+  matR = NULL,
+  matF = NULL,
+  matC = NULL,
+  method = c("R0", "age_diff", "cohort"),
+  ...
+)
 }
 \arguments{
 \item{matU}{The survival component of a matrix population model (i.e., a
@@ -13,14 +20,23 @@ progression, stasis, and retrogression).}
 
 \item{matR}{The reproductive component of a matrix population model (i.e., a
 square projection matrix only reflecting transitions due to reproduction;
-either sexual, clonal, or both).}
+either sexual, clonal, or both). If \code{matR} is not provided, it will be
+constructed by summing \code{matF} and \code{matC}.}
+
+\item{matF}{The matrix reflecting sexual reproduction. If provided
+without \code{matC}, \code{matC} is assumed to be a zero matrix. If
+\code{matR} is provided, this argument is ignored.}
+
+\item{matC}{The matrix reflecting clonal (asexual) reproduction.
+If provided without \code{matF}, \code{matF} is assumed to be a zero
+matrix. If \code{matR} is provided, this argument is ignored.}
 
 \item{method}{The method used to calculate generation time. Defaults to "R0".
 See Details for explanation of calculations.}
 
 \item{...}{Additional arguments passed to \code{net_repro_rate} when
 \code{method = "R0"} or \code{mpm_to_*} when \code{method = "cohort"}.
-Ignored when \code{method = "age_diff"}}
+Ignored when \code{method = "age_diff"}.}
 }
 \value{
 Returns generation time. If \code{matU} is singular (often indicating
@@ -69,6 +85,7 @@ data(mpm1)
 
 # calculate generation time
 gen_time(matU = mpm1$matU, matR = mpm1$matF) # defaults to "R0" method
+gen_time(matU = mpm1$matU, matF = mpm1$matF) # defaults to "R0" method
 gen_time(matU = mpm1$matU, matR = mpm1$matF, method = "age_diff")
 gen_time(
   matU = mpm1$matU, matR = mpm1$matF, method = "cohort", lx_crit =
@@ -79,7 +96,7 @@ gen_time(
 \references{
 Bienvenu, F. & Legendre, S. 2015. A New Approach to the
   Generation Time in Matrix Population Models. The American Naturalist 185
-  (6): 834–843. doi:10.1086/681104.
+  (6): 834–843. <doi:10.1086/681104>.
 
 Caswell, H. 2001. Matrix Population Models: Construction,
   Analysis, and Interpretation. Sinauer Associates; 2nd edition. ISBN:
@@ -92,6 +109,9 @@ University Press. ISBN: 978-0691093574
 Other life history traits: 
 \code{\link{entropy_d}()},
 \code{\link{entropy_k}()},
+\code{\link{entropy_k_age}()},
+\code{\link{entropy_k_stage}()},
+\code{\link{life_elas}()},
 \code{\link{life_expect_mean}()},
 \code{\link{longevity}()},
 \code{\link{net_repro_rate}()},

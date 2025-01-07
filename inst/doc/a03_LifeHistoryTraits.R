@@ -21,7 +21,7 @@ life_expect_var(matU = mpm1$matU, start = 1)
 life_expect_mean(matU = mpm1$matU, start = 2)
 
 ## -----------------------------------------------------------------------------
-life_expect_mean(matU = mpm1$matU, mixdist = c(0, 0.4, 0.6, 0, 0), start = NULL)
+life_expect_mean(matU = mpm1$matU, start = NULL, mixdist = c(0, 0.4, 0.6, 0, 0))
 
 ## -----------------------------------------------------------------------------
 longevity(matU = mpm1$matU, start = 2, lx_crit = 0.05)
@@ -63,7 +63,7 @@ maturedist
 
 ## -----------------------------------------------------------------------------
 # mean life expectancy from maturity
-life_expect_mean(matU = mpm1$matU, mixdist = maturedist, start = NULL)
+life_expect_mean(matU = mpm1$matU, start = NULL, mixdist = c(maturedist))
 
 # mean life expectancy from "small" stage
 life_expect_mean(matU = mpm1$matU, start = 2)
@@ -89,7 +89,15 @@ legend("topright",
 
 ## -----------------------------------------------------------------------------
 entropy_d(lx, mx) # Demetrius' entropy
-entropy_k(lx) # Keyfitz' entropy
+entropy_d(lx = mpm1$matU, mx = mpm1$matF, start = "small") # Demetrius' entropy
+
+life_elas(lx) # Keyfitz' entropy
+life_elas(lx = mpm1$matU, start = "small") # Keyfitz' entropy
+
+entropy_k_stage(mpm1$matU)
+
+data(leslie_mpm1) # load leslie matrix
+entropy_k_age(leslie_mpm1$matU)
 
 ## -----------------------------------------------------------------------------
 # shape of survival/mortality trajectory
